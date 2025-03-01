@@ -13,7 +13,6 @@
                             <field name="ten_loai_van_ban"/>
                         </group>
                     </sheet>
-                    
                 </form>
             </field>
         </record>

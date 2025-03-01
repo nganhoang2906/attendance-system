@@ -9,13 +9,17 @@
                     <sheet>
                         <div class="oe_read_only" style="font-size:25px">Văn bản đến</div>
                         <group col="4" string="Thông tin chung">
-                            <field name="ten_van_ban"/>
-                            <field name="so_van_ban_den"/>
+                            <field name="ma_van_ban_den"/>
                             <field name="so_hieu_van_ban"/>
-                            <field name="noi_gui_den"/>
+                            <field name="ten_van_ban"/>
+                            <field name="nam"/>
+                            <field name="so_van_ban_den"/>
+                            <field name="noi_gui"/>
+                            <field name="muc_do_khan"/>
+                            <field name="ngay_den"/>
+                            <field name="loai_van_ban_id"/>
                         </group>
                     </sheet>
-                    
                 </form>
             </field>
         </record>
@@ -25,10 +29,15 @@
             <field name="model">van_ban_den</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="ten_van_ban"/>
-                    <field name="so_van_ban_den"/>
+                    <field name="ma_van_ban_den"/>
                     <field name="so_hieu_van_ban"/>
-                    <field name="noi_gui_den"/>
+                    <field name="ten_van_ban"/>
+                    <field name="nam"/>
+                    <field name="so_van_ban_den"/>
+                    <field name="noi_gui"/>
+                    <field name="muc_do_khan"/>
+                    <field name="ngay_den"/>
+                    <field name="loai_van_ban_id"/>
                 </tree>
             </field>
         </record>
@@ -37,10 +46,15 @@
             <field name="model">van_ban_den</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="ten_van_ban"/>
-                    <field name="so_van_ban_den"/>
+                    <field name="ma_van_ban_den"/>
                     <field name="so_hieu_van_ban"/>
-                    <field name="noi_gui_den"/>
+                    <field name="ten_van_ban"/>
+                    <field name="nam"/>
+                    <field name="so_van_ban_den"/>
+                    <field name="noi_gui"/>
+                    <field name="muc_do_khan"/>
+                    <field name="ngay_den"/>
+                    <field name="loai_van_ban_id"/>
                 </search>
             </field>
         </record>

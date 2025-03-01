@@ -9,8 +9,8 @@
                     <sheet>
                         <div class="oe_read_only" style="font-size:25px">Chứng chỉ bằng cấp</div>
                         <group col="4" string="Thông tin chung">
-                            <field name="ma_chung_chi_bang_cap"/>
-                            <field name="ten_chung_chi_bang_cap"/>
+                            <field name="ma_chung_chi"/>
+                            <field name="ten_chung_chi"/>
                         </group>
                     </sheet>
                 </form>
@@ -22,8 +22,8 @@
             <field name="model">chung_chi_bang_cap</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="ma_chung_chi_bang_cap"/>
-                    <field name="ten_chung_chi_bang_cap"/>
+                    <field name="ma_chung_chi"/>
+                    <field name="ten_chung_chi"/>
                 </tree>
             </field>
         </record>
@@ -32,8 +32,8 @@
             <field name="model">chung_chi_bang_cap</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="ma_chung_chi_bang_cap"/>
-                    <field name="ten_chung_chi_bang_cap"/>
+                    <field name="ma_chung_chi"/>
+                        <field name="ten_chung_chi"/>
                 </search>
             </field>
         </record>

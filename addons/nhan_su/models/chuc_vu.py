@@ -1,6 +1,5 @@
 from odoo import models, fields, api
 
-
 class ChucVu(models.Model):
     _name = 'chuc_vu'
     _description = 'Bảng chứa thông tin chức vụ'
