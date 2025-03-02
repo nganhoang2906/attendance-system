@@ -34,8 +34,8 @@ class DotDangKy(models.Model):
     def _compute_nhan_vien(self):
         for record in self:
             record.nhan_vien_ids = self.env['nhan_vien'].search([
-                ('phong_ban_id', '!=', "")
-                ('chuc_vu_id', '!=', ""),
+                ('phong_ban_id', '!=', False)
+                ('chuc_vu_id', '!=', False),
             ])
             
     @api.depends('han_dang_ky', 'ngay_ket_thuc')
