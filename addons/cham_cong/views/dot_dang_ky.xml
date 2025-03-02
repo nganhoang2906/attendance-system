@@ -17,7 +17,8 @@
                             <field name="ngay_ket_thuc"/>
                             <field name="han_dang_ky"/>
                             <field name="nhan_vien_ids" widget="many2many_checkboxes"/>
-                            <field name="trang_thai"/>
+                            <field name="trang_thai_dang_ky"/>
+                            <field name="trang_thai_ap_dung"/>
                         </group>
                     </sheet>
                 </form>
@@ -37,7 +38,8 @@
                     <field name="ngay_ket_thuc"/>
                     <field name="han_dang_ky"/>
                     <field name="nhan_vien_ids" widget="many2many_tags"/>
-                    <field name="trang_thai"/>
+                    <field name="trang_thai_dang_ky"/>
+                    <field name="trang_thai_ap_dung"/>
                 </tree>
             </field>
         </record>
@@ -54,7 +56,8 @@
                     <field name="ngay_ket_thuc"/>
                     <field name="han_dang_ky"/>
                     <field name="nhan_vien_ids" widget="many2many_tags"/>
-                    <field name="trang_thai"/>
+                    <field name="trang_thai_dang_ky"/>
+                    <field name="trang_thai_ap_dung"/>
                 </search>
             </field>
         </record>
