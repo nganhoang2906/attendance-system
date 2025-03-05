@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="view_bang_cham_cong_form" model="ir.ui.view">
-            <field name="name">bang_cham_cong</field>
+            <field name="name">bang_cham_cong.form</field>
             <field name="model">bang_cham_cong</field>
             <field name="arch" type="xml">
                 <form>
@@ -11,9 +11,16 @@
                         <group col="4" string="Thông tin chung">
                             <field name="nhan_vien_id"/>
                             <field name="ngay_cham_cong"/>
-                            <field name="thoi_gian_vao"/>
-                            <field name="thoi_gian_ra"/>
-                            <field name="thoi_gian_lam"/>
+                            <field name="ca_lam"/>
+                            <field name="gio_vao_ca"/>
+                            <field name="gio_ra_ca"/>
+                            <field name="gio_vao"/>
+                            <field name="gio_ra"/>
+                            <field name="phut_di_muon"/>
+                            <field name="phut_ve_som"/>
+                            <field name="trang_thai"/>
+                            <field name="loai_don"/>
+                            <field name="thoi_gian_xin"/>
                         </group>
                     </sheet>
                 </form>
@@ -21,28 +28,42 @@
         </record>
 
         <record id="view_bang_cham_cong_tree" model="ir.ui.view">
-            <field name="name">bang_cham_cong</field>
+            <field name="name">bang_cham_cong.tree</field>
             <field name="model">bang_cham_cong</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="nhan_vien_id"/>
-                        <field name="ngay_cham_cong"/>
-                        <field name="thoi_gian_vao"/>
-                        <field name="thoi_gian_ra"/>
-                        <field name="thoi_gian_lam"/>
+                    <field name="ngay_cham_cong"/>
+                    <field name="ca_lam"/>
+                    <field name="gio_vao_ca"/>
+                    <field name="gio_ra_ca"/>
+                    <field name="gio_vao"/>
+                    <field name="gio_ra"/>
+                    <field name="phut_di_muon"/>
+                    <field name="phut_ve_som"/>
+                    <field name="trang_thai"/>
+                    <field name="loai_don"/>
+                    <field name="thoi_gian_xin"/>
                 </tree>
             </field>
         </record>
 
-        <record model="ir.ui.view" id="bang_cham_cong_search">
+        <record id="bang_cham_cong_search" model="ir.ui.view">
             <field name="model">bang_cham_cong</field>
             <field name="arch" type="xml">
                 <search>
                     <field name="nhan_vien_id"/>
-                        <field name="ngay_cham_cong"/>
-                        <field name="thoi_gian_vao"/>
-                        <field name="thoi_gian_ra"/>
-                        <field name="thoi_gian_lam"/>
+                    <field name="ngay_cham_cong"/>
+                    <field name="ca_lam"/>
+                    <field name="gio_vao_ca"/>
+                    <field name="gio_ra_ca"/>
+                    <field name="gio_vao"/>
+                    <field name="gio_ra"/>
+                    <field name="phut_di_muon"/>
+                    <field name="phut_ve_som"/>
+                    <field name="trang_thai"/>
+                    <field name="loai_don"/>
+                    <field name="thoi_gian_xin"/>
                 </search>
             </field>
         </record>
@@ -51,9 +72,7 @@
             <field name="name">Bảng chấm công</field>
             <field name="res_model">bang_cham_cong</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref = "bang_cham_cong_search"/>
+            <field name="search_view_id" ref="bang_cham_cong_search"/>
         </record>
     </data>
 </odoo>
-        
-    

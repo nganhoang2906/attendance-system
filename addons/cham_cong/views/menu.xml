@@ -26,5 +26,13 @@
             sequence="3"
             action="action_dot_dang_ky"
         />
+
+        <menuitem name="Đơn từ" 
+            id="menu_don_tu" 
+            parent="menu_root" 
+            sequence="4"
+            action="action_don_tu"
+        />
+
     </data>
 </odoo>
