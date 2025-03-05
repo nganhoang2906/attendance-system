@@ -9,7 +9,6 @@
                     <sheet>
                         <div class="oe_read_only" style="font-size:25px">Đăng ký ca làm theo ngày</div>
                         <group col="4" string="Thông tin chung">
-                            <field name="ma_dot_ngay"/>
                             <field name="dot_dang_ky_id"/>
                             <field name="nhan_vien_id"/>
                             <field name="ngay_lam"/>
@@ -25,7 +24,6 @@
             <field name="model">dang_ky_ca_lam_theo_ngay</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="ma_dot_ngay"/>
                     <field name="dot_dang_ky_id"/>
                     <field name="nhan_vien_id"/>
                     <field name="ngay_lam"/>
@@ -38,7 +36,6 @@
             <field name="model">dang_ky_ca_lam_theo_ngay</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="ma_dot_ngay"/>
                     <field name="dot_dang_ky_id"/>
                     <field name="nhan_vien_id"/>
                     <field name="ngay_lam"/>
