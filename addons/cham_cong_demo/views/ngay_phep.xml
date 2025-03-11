@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_ngay_phep_form" model="ir.ui.view">
+            <field name="name">ngay_phep</field>
+            <field name="model">ngay_phep</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Ngày phép</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="nhan_vien_id"/>
+                            <field name="nam"/>
+                            <field name="so_ngay_phep_tieu_chuan"/>
+                            <field name="so_ngay_phep_nam_truoc"/>
+                            <field name="so_ngay_phep_khac"/>
+                            <field name="tong_so_ngay_phep"/>
+                            <field name="so_ngay_da_su_dung"/>
+                            <field name="so_ngay_con_lai"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ngay_phep_tree" model="ir.ui.view">
+            <field name="name">ngay_phep</field>
+            <field name="model">ngay_phep</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="nhan_vien_id"/>
+                    <field name="nam"/>
+                    <field name="so_ngay_phep_tieu_chuan"/>
+                    <field name="so_ngay_phep_nam_truoc"/>
+                    <field name="so_ngay_phep_khac"/>
+                    <field name="tong_so_ngay_phep"/>
+                    <field name="so_ngay_da_su_dung"/>
+                    <field name="so_ngay_con_lai"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="ngay_phep_search">
+            <field name="model">ngay_phep</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="nhan_vien_id"/>
+                    <field name="nam"/>
+                    <field name="so_ngay_phep_tieu_chuan"/>
+                    <field name="so_ngay_phep_nam_truoc"/>
+                    <field name="so_ngay_phep_khac"/>
+                    <field name="tong_so_ngay_phep"/>
+                    <field name="so_ngay_da_su_dung"/>
+                    <field name="so_ngay_con_lai"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ngay_phep" model="ir.actions.act_window">
+            <field name="name">Ngày phép</field>
+            <field name="res_model">ngay_phep</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "ngay_phep_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    

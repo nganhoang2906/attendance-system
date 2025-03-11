@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+        <record id="view_bao_cao_cham_cong_tree" model="ir.ui.view">
+        <field name="name">bao.cao.cham.cong.tree</field>
+        <field name="model">bao_cao_cham_cong</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="nam"/>
+                <field name="thang"/>
+                <field name="so_nhan_vien_di_muon"/>
+                <field name="so_nhan_vien_ve_som"/>
+                <field name="so_nhan_vien_nghi"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_bao_cao_cham_cong_pivot" model="ir.ui.view">
+        <field name="name">bao.cao.cham.cong.pivot</field>
+        <field name="model">bao_cao_cham_cong</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="nam" type="col"/>
+                <field name="thang" type="row"/>
+                <field name="so_nhan_vien_di_muon" type="measure"/>
+                <field name="so_nhan_vien_ve_som" type="measure"/>
+                <field name="so_nhan_vien_nghi" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_bao_cao_cham_cong_graph" model="ir.ui.view">
+        <field name="name">bao.cao.cham.cong.graph</field>
+        <field name="model">bao_cao_cham_cong</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="thang" type="row"/>
+                <field name="so_nhan_vien_di_muon" type="measure"/>
+                <field name="so_nhan_vien_ve_som" type="measure"/>
+                <field name="so_nhan_vien_nghi" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    
+    <record id="action_bao_cao_cham_cong" model="ir.actions.act_window">
+        <field name="name">Báo Cáo Chấm Công</field>
+        <field name="res_model">bao_cao_cham_cong</field>
+        <field name="view_mode">tree,graph,form</field>
+    </record>
+  </data>
+</odoo>

@@ -14,10 +14,10 @@ class BangChamCong(models.Model):
     _name = 'bang_cham_cong'
     _description = "Bảng chấm công"
     _rec_name = 'cham_cong_id'
-
+    
+    cham_cong_id = fields.Char(string="Mã chấm công", compute="_compute_cham_cong_id", store=True)
     nhan_vien_id = fields.Many2one('nhan_vien', string="Nhân viên", required=True)
     ngay_cham_cong = fields.Date("Ngày chấm công", required=True)
-    cham_cong_id = fields.Char(string="Mã chấm công", compute="_compute_cham_cong_id", store=True)
     dang_ky_ca_lam_id = fields.Many2one('dang_ky_ca_lam_theo_ngay', string="Đăng ký ca làm")
     ca_lam = fields.Selection(string="Ca làm", related='dang_ky_ca_lam_id.ca_lam', store=True)
     gio_vao_ca = fields.Datetime("Giờ vào ca", compute='_compute_gio_ca', store=True)

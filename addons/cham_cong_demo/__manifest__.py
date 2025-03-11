@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "cham_cong",
+    'name': "cham_cong_demo",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -28,11 +28,11 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/dang_ky_ca_lam_theo_ngay.xml',
-        'views/bang_cham_cong.xml',
-        'views/dot_dang_ky.xml',
-        'views/don_tu.xml',
-        'views/bao_cao_cham_cong.xml',
+        'views/dot_dang_ky_ca_lam.xml',
+        'views/ca_lam.xml',
+        'views/ngay_phep.xml',
+        'views/dang_ky_ca_lam.xml',
+        'views/don_xin_nghi.xml',
         'views/menu.xml',
     ],
     # only loaded in demonstration mode

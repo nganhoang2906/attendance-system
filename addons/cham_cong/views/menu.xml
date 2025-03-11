@@ -34,5 +34,12 @@
             action="action_don_tu"
         />
 
+        <menuitem name="Báo cáo thống kê" 
+            id="menu_bao_cao_cham_cong" 
+            parent="menu_root" 
+            sequence="5"
+            action="action_bao_cao_cham_cong"
+        />
+
     </data>
 </odoo>

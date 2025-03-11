@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_don_xin_nghi_form" model="ir.ui.view">
+            <field name="name">don_xin_nghi</field>
+            <field name="model">don_xin_nghi</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_duyet" type="object" string="Duyệt" class="oe_highlight"
+                                attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                        <button name="action_tu_choi" type="object" string="Từ chối" class="oe_secondary"
+                                attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                        <button name="action_huy" type="object" string="Hủy" class="oe_danger"
+                                attrs="{'invisible': [('trang_thai', '!=', 'Đã duyệt')]}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Đơn xin nghỉ</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="nhan_vien_id"/>
+                            <field name="ngay_lam_don"/>
+                            <field name="ngay_bat_dau_nghi"/>
+                            <field name="ngay_ket_thuc_nghi"/>
+                            <field name="loai_nghi"/>
+                            <field name="nghi_nua_ngay"/>
+                            <field name="buoi_nghi"/>
+                            <field name="so_ngay_nghi"/>
+                            <field name="trang_thai" readonly="1"/>
+                            <field name="ly_do"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_don_xin_nghi_tree" model="ir.ui.view">
+            <field name="name">don_xin_nghi</field>
+            <field name="model">don_xin_nghi</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="nhan_vien_id"/>
+                    <field name="ngay_lam_don"/>
+                    <field name="ngay_bat_dau_nghi"/>
+                    <field name="ngay_ket_thuc_nghi"/>
+                    <field name="loai_nghi"/>
+                    <field name="nghi_nua_ngay"/>
+                    <field name="buoi_nghi"/>
+                    <field name="so_ngay_nghi"/>
+                    <field name="trang_thai"/>
+                    <field name="ly_do"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="don_xin_nghi_search">
+            <field name="model">don_xin_nghi</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="nhan_vien_id"/>
+                    <field name="ngay_lam_don"/>
+                    <field name="ngay_bat_dau_nghi"/>
+                    <field name="ngay_ket_thuc_nghi"/>
+                    <field name="loai_nghi"/>
+                    <field name="nghi_nua_ngay"/>
+                    <field name="buoi_nghi"/>
+                    <field name="so_ngay_nghi"/>
+                    <field name="trang_thai"/>
+                    <field name="ly_do"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_don_xin_nghi" model="ir.actions.act_window">
+            <field name="name">Đơn xin nghỉ</field>
+            <field name="res_model">don_xin_nghi</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "don_xin_nghi_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem
+            id="menu_root"
+            name="Chấm công 2.0"
+            sequence="0"
+        />
+
+        <menuitem name="Ca làm" 
+            id="menu_ca_lam" 
+            parent="menu_root" 
+            sequence="1"
+            action="action_ca_lam"
+        />
+
+        <menuitem name="Đợt đăng ký" 
+            id="menu_dot_dang_ky_ca_lam" 
+            parent="menu_root" 
+            sequence="2"
+            action="action_dot_dang_ky_ca_lam"
+        />
+
+        <menuitem name="Đăng ký ca làm" 
+            id="menu_dang_ky_ca_lam" 
+            parent="menu_root" 
+            sequence="3"
+            action="action_dang_ky_ca_lam"
+        />
+
+        <menuitem name="Quản lý ngày phép" 
+            id="menu_ngay_phep" 
+            parent="menu_root" 
+            sequence="4"
+            action="action_ngay_phep"
+        />
+
+        <menuitem name="Quản lý đơn từ" 
+            id="menu_quan_ly_don_tu" 
+            parent="menu_root" 
+            sequence="5"
+        />
+
+        <menuitem name="Đơn xin nghỉ" 
+            id="menu_don_xin_nghi" 
+            parent="menu_quan_ly_don_tu" 
+            sequence="1"
+            action="action_don_xin_nghi"
+        />
+    </data>
+</odoo>

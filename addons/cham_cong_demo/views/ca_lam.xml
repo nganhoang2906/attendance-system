@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_ca_lam_form" model="ir.ui.view">
+            <field name="name">ca_lam</field>
+            <field name="model">ca_lam</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Ca làm</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="ma_ca"/>
+                            <field name="ten_ca"/>
+                            <field name="gio_vao"/>
+                            <field name="gio_ra"/>
+                            <field name="nghi_giua_gio"/>
+                            <field name="tong_thoi_gian"/>
+                            <field name="gio_bat_dau_nghi_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
+                            <field name="gio_ket_thuc_nghi_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ca_lam_tree" model="ir.ui.view">
+            <field name="name">ca_lam</field>
+            <field name="model">ca_lam</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ma_ca"/>
+                    <field name="ten_ca"/>
+                    <field name="gio_vao"/>
+                    <field name="gio_ra"/>
+                    <field name="gio_bat_dau_nghi_giua_gio"/>
+                    <field name="gio_ket_thuc_nghi_giua_gio"/>
+                    <field name="tong_thoi_gian"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="ca_lam_search">
+            <field name="model">ca_lam</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ma_ca"/>
+                    <field name="ten_ca"/>
+                    <field name="gio_vao"/>
+                    <field name="gio_ra"/>
+                    <field name="gio_bat_dau_nghi_giua_gio"/>
+                    <field name="gio_ket_thuc_nghi_giua_gio"/>
+                    <field name="tong_thoi_gian"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ca_lam" model="ir.actions.act_window">
+            <field name="name">Ca làm</field>
+            <field name="res_model">ca_lam</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "ca_lam_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    
