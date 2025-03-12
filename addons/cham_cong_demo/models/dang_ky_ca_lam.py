@@ -13,7 +13,7 @@ class DangKyCaLam(models.Model):
     nhan_vien_id = fields.Many2one('nhan_vien', string="Nhân viên", required=True)
     dot_dang_ky_id = fields.Many2one('dot_dang_ky_ca_lam', string="Đợt đăng ký", required=True)
     ngay_dang_ky = fields.Date("Ngày đăng ký", required=True)
-    ca_lam_id = fields.Many2one('ca_lam', string="Ca làm", required=True)
+    ca_lam_id = fields.Many2one('ca_lam', string="Ca làm")
     trang_thai = fields.Selection(
         [
             ('Chờ duyệt', "Chờ duyệt"),
@@ -49,6 +49,8 @@ class DangKyCaLam(models.Model):
             
     def action_duyet(self):
         for record in self:
+            if not record.ca_lam_id:
+                raise ValidationError("Chưa chọn ca làm!")
             if record.trang_thai == 'Chờ duyệt':
                 record.write({'trang_thai': 'Đã duyệt'})
 

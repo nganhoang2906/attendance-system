@@ -7,12 +7,12 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="action_duyet" type="object" string="Duyệt" class="oe_highlight"
-                                attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
-                        <button name="action_tu_choi" type="object" string="Từ chối" class="oe_secondary"
-                                attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
-                        <button name="action_huy" type="object" string="Hủy" class="oe_danger"
-                                attrs="{'invisible': [('trang_thai', '!=', 'Đã duyệt')]}"/>
+                        <button name="action_duyet" type="object" string="Duyệt" class="btn-primary"
+                            attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                        <button name="action_tu_choi" type="object" string="Từ chối" class="btn-danger"
+                            attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                        <button name="action_huy" type="object" string="Hủy" class="btn-warning"
+                            attrs="{'invisible': [('trang_thai', '!=', 'Đã duyệt')]}"/>
                     </header>
                     <sheet>
                         <div class="oe_read_only" style="font-size:25px">Đơn xin nghỉ</div>
@@ -25,8 +25,8 @@
                             <field name="nghi_nua_ngay"/>
                             <field name="buoi_nghi"/>
                             <field name="so_ngay_nghi"/>
-                            <field name="trang_thai" readonly="1"/>
                             <field name="ly_do"/>
+                            <field name="trang_thai" readonly="1"/>
                         </group>
                     </sheet>
                 </form>
@@ -46,8 +46,19 @@
                     <field name="nghi_nua_ngay"/>
                     <field name="buoi_nghi"/>
                     <field name="so_ngay_nghi"/>
-                    <field name="trang_thai"/>
                     <field name="ly_do"/>
+                    <field name="trang_thai" widget="badge"
+                        decoration-info="trang_thai == 'Chờ duyệt'"
+                        decoration-success="trang_thai == 'Đã duyệt'"
+                        decoration-muted="trang_thai == 'Đã hủy'"
+                        decoration-danger="trang_thai == 'Đã từ chối'"
+                    />
+                    <button name="action_duyet" type="object" string="Duyệt" class="btn-primary"
+                        attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                    <button name="action_tu_choi" type="object" string="Từ chối" class="btn-danger"
+                        attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                    <button name="action_huy" type="object" string="Hủy" class="btn-warning"
+                        attrs="{'invisible': [('trang_thai', '!=', 'Đã duyệt')]}"/>
                 </tree>
             </field>
         </record>
@@ -64,8 +75,8 @@
                     <field name="nghi_nua_ngay"/>
                     <field name="buoi_nghi"/>
                     <field name="so_ngay_nghi"/>
-                    <field name="trang_thai"/>
                     <field name="ly_do"/>
+                    <field name="trang_thai"/>
                 </search>
             </field>
         </record>

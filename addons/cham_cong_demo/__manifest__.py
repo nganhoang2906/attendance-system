@@ -24,6 +24,12 @@
         'base',
         'nhan_su'
     ],
+    
+    'assets': {
+        'web.assets_backend': [
+            'cham_cong_demo/static/src/css/custom_style.css',
+        ],
+    },
 
     # always loaded
     'data': [
@@ -39,4 +45,5 @@
     'demo': [
         'demo/demo.xml',
     ],
+
 }

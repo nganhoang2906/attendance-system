@@ -8,6 +8,7 @@ class NhanVien(models.Model):
     _rec_name = 'ho_va_ten'
     _order = 'ten asc, tuoi desc'
 
+    ma_nhan_vien = fields.Char("Mã nhân viên", required=True)
     ma_dinh_danh = fields.Char("Mã định danh", required=True)
     ho_ten_dem = fields.Char("Họ tên đệm", required=True)
     ten = fields.Char("Tên", required=True)
@@ -23,12 +24,23 @@ class NhanVien(models.Model):
         required=True,
     )
     que_quan = fields.Char("Quê quán", required=True)
+    dia_chi = fields.Char("Địa chỉ", required=True)
     email = fields.Char("Email", required=True)
     so_dien_thoai = fields.Char("Số điện thoại", required=True)
     anh = fields.Binary("Ảnh")
     phong_ban_id = fields.Many2one("phong_ban", string="Phòng ban", compute="_compute_cong_tac", store=True)
     chuc_vu_id = fields.Many2one("chuc_vu", string="Chức vụ", compute="_compute_cong_tac", store=True)
-    
+    trang_thai = fields.Selection(
+        [
+            ("Đang thử việc", "Đang thử việc"),
+            ("Đang làm việc", "Đang làm việc"),
+            ("Đã nghỉ việc", "Đã nghỉ việc"),
+            ("Đang tạm nghỉ", "Đang tạm nghỉ"),
+        ],
+        string="Trạng thái",
+        required=True,
+        default="Đang thử việc",
+    )
     lich_su_cong_tac_ids = fields.One2many(
         "lich_su_cong_tac", 
         inverse_name="nhan_vien_id", 
@@ -65,7 +77,20 @@ class NhanVien(models.Model):
                 lich_su = self.env['lich_su_cong_tac'].search([
                     ('nhan_vien_id', '=', record.id),
                     ('loai_chuc_vu', '=', "Chính"),
-                    ('trang_thai', '=', "Đang giữ")  # Kiểm tra giá trị chính xác trong DB
+                    ('trang_thai', '=', "Đang giữ")
                 ], limit=1)
                 record.chuc_vu_id = lich_su.chuc_vu_id.id if lich_su else False
                 record.phong_ban_id = lich_su.phong_ban_id.id if lich_su else False
+
+    @api.constrains("trang_thai", "chuc_vu_id", "phong_ban_id")
+    def _check_lic_su_cong_tac(self):
+        for record in self:
+            if record.trang_thai == "Đang làm việc":
+                lich_su = self.env["lich_su_cong_tac"].search([
+                    ("nhan_vien_id", "=", record.id),
+                    ("loai_chuc_vu", "=", "Chính"),
+                    ("trang_thai", "=", "Đang giữ")
+                ], limit=1)
+
+                if not lich_su:
+                    raise ValidationError("Nhân viên đang làm phải có phòng ban và chức vụ chính đang giữ.")

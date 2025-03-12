@@ -1,5 +1,5 @@
-from odoo import models, fields, api
-from datetime import datetime
+from odoo import models, fields
+
 class ChungChiBangCap(models.Model):
     _name = 'danh_sach_chung_chi_bang_cap'
     _description = 'Bảng chứa thông tin danh sách chứng chỉ, bằng cấp'

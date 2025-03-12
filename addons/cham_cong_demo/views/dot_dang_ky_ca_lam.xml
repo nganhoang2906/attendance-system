@@ -38,8 +38,15 @@
                     <field name="ngay_ket_thuc"/>
                     <field name="han_dang_ky"/>
                     <field name="nhan_vien_ids" widget="many2many_tags"/>
-                    <field name="trang_thai_dang_ky"/>
-                    <field name="trang_thai_ap_dung"/>
+                    <field name="trang_thai_dang_ky" widget="badge"
+                       decoration-success="trang_thai_dang_ky == 'Đang mở'"
+                       decoration-danger="trang_thai_dang_ky == 'Đã hết hạn'"
+                    />
+                    <field name="trang_thai_ap_dung" widget="badge"
+                       decoration-success="trang_thai_ap_dung == 'Đang áp dụng'"
+                       decoration-info="trang_thai_ap_dung == 'Chờ duyệt'"
+                       decoration-danger="trang_thai_ap_dung == 'Ngừng áp dụng'"
+                    />
                 </tree>
             </field>
         </record>

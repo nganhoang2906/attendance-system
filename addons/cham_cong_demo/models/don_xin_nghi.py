@@ -127,7 +127,7 @@ class DonXinNghi(models.Model):
     @api.constrains('so_ngay_nghi', 'trang_thai', 'loai_nghi')
     def _check_han_muc_nghi(self):
         for record in self:
-            if record.loai_nghi != 'Nghỉ không lương' and record.ngay_phep_id:
+            if record.loai_nghi == 'Nghỉ phép' and record.ngay_phep_id:
                 if record.ngay_phep_id.so_ngay_con_lai < record.so_ngay_nghi:
                     raise ValidationError(
                         f"Nhân viên {record.nhan_vien_id.ho_va_ten} không đủ ngày phép để nghỉ! Số ngày phép còn lại: {record.ngay_phep_id.so_ngay_con_lai}"
@@ -162,7 +162,7 @@ class DonXinNghi(models.Model):
                 new_state = vals['trang_thai']
                 ngay_phep = record.ngay_phep_id.sudo()
 
-                if not ngay_phep or record.loai_nghi == 'Nghỉ không lương':
+                if not ngay_phep or record.loai_nghi != 'Nghỉ phép':
                     continue  
 
                 if record.trang_thai == 'Đã duyệt' and new_state == 'Đã hủy':
