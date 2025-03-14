@@ -47,9 +47,17 @@ class DotDangKyCaLam(models.Model):
     
     @api.constrains('nam_dang_ky')
     def _check_nam_dang_ky(self):
+        current_year = datetime.today().year
+        min_year = current_year - 2
+        max_year = current_year + 2
+
         for record in self:
-            if not record.nam_dang_ky.isdigit() or int(record.nam_dang_ky) < 2000 or int(record.nam_dang_ky) > datetime.today().year + 10:
-                raise ValidationError("Năm không hợp lệ. Vui lòng nhập năm từ 2000 trở đi và trong vòng 10 năm tới.")
+            if not record.nam_dang_ky.isdigit():
+                raise ValidationError("Năm đăng ký phải là số!")
+            
+            year = int(record.nam_dang_ky)
+            if year < min_year or year > max_year:
+                raise ValidationError(f"Năm đăng ký phải trong khoảng từ {min_year} đến {max_year}!")
     
     @api.depends('thang_dang_ky', 'nam_dang_ky')
     def _compute_ten_dot(self):
@@ -121,7 +129,6 @@ class DotDangKyCaLam(models.Model):
     def create(self, vals):
         record = super(DotDangKyCaLam, self).create(vals)
 
-        # Kiểm tra và tạo đăng ký ca làm
         nhan_vien_ids = record.nhan_vien_ids
         ngay_bat_dau = record.ngay_bat_dau
         ngay_ket_thuc = record.ngay_ket_thuc
@@ -129,15 +136,16 @@ class DotDangKyCaLam(models.Model):
         if nhan_vien_ids and ngay_bat_dau and ngay_ket_thuc:
             ngay_dang_ky = ngay_bat_dau
             while ngay_dang_ky <= ngay_ket_thuc:
-                for nhan_vien in nhan_vien_ids:
-                    self.env['dang_ky_ca_lam'].create({
-                        'nhan_vien_id': nhan_vien.id,
-                        'dot_dang_ky_id': record.id,
-                        'ngay_dang_ky': ngay_dang_ky,
-                        'ca_lam_id': False,
-                        'trang_thai': 'Chờ duyệt'
-                    })
-                ngay_dang_ky += timedelta(days=1)
+                if ngay_dang_ky.weekday() != 6:
+                    for nhan_vien in nhan_vien_ids:
+                        self.env['dang_ky_ca_lam'].create({
+                            'nhan_vien_id': nhan_vien.id,
+                            'dot_dang_ky_id': record.id,
+                            'ngay_dang_ky': ngay_dang_ky,
+                            'ca_lam_id': False,
+                            'trang_thai': 'Chờ duyệt'
+                        })
+                    ngay_dang_ky += timedelta(days=1)
 
         return record
 
@@ -166,20 +174,21 @@ class DotDangKyCaLam(models.Model):
 
                     ngay_dang_ky = ngay_bat_dau_moi
                     while ngay_dang_ky <= ngay_ket_thuc_moi:
-                        for nhan_vien_id in nhan_vien_moi:
-                            if not self.env['dang_ky_ca_lam'].search([
-                                ('dot_dang_ky_id', '=', record.id),
-                                ('nhan_vien_id', '=', nhan_vien_id),
-                                ('ngay_dang_ky', '=', ngay_dang_ky)
-                            ]):
-                                self.env['dang_ky_ca_lam'].create({
-                                    'nhan_vien_id': nhan_vien_id,
-                                    'dot_dang_ky_id': record.id,
-                                    'ngay_dang_ky': ngay_dang_ky,
-                                    'ca_lam_id': False,
-                                    'trang_thai': 'Chờ duyệt'
-                                })
-                        ngay_dang_ky += timedelta(days=1)
+                        if ngay_dang_ky.weekday() != 6:
+                            for nhan_vien_id in nhan_vien_moi:
+                                if not self.env['dang_ky_ca_lam'].search([
+                                    ('dot_dang_ky_id', '=', record.id),
+                                    ('nhan_vien_id', '=', nhan_vien_id),
+                                    ('ngay_dang_ky', '=', ngay_dang_ky)
+                                ]):
+                                    self.env['dang_ky_ca_lam'].create({
+                                        'nhan_vien_id': nhan_vien_id,
+                                        'dot_dang_ky_id': record.id,
+                                        'ngay_dang_ky': ngay_dang_ky,
+                                        'ca_lam_id': False,
+                                        'trang_thai': 'Chờ duyệt'
+                                    })
+                            ngay_dang_ky += timedelta(days=1)
 
                 if nhan_vien_cu != nhan_vien_moi:
                     nhan_vien_xoa = nhan_vien_cu - nhan_vien_moi
@@ -192,15 +201,15 @@ class DotDangKyCaLam(models.Model):
                     for nhan_vien_id in nhan_vien_them:
                         ngay_dang_ky = ngay_bat_dau_moi
                         while ngay_dang_ky <= ngay_ket_thuc_moi:
-                            self.env['dang_ky_ca_lam'].create({
-                                'nhan_vien_id': nhan_vien_id,
-                                'dot_dang_ky_id': record.id,
-                                'ngay_dang_ky': ngay_dang_ky,
-                                'ca_lam_id': False,
-                                'trang_thai': 'Chờ duyệt'
-                            })
-                            ngay_dang_ky += timedelta(days=1)
-
+                            if ngay_dang_ky.weekday() != 6:
+                                self.env['dang_ky_ca_lam'].create({
+                                    'nhan_vien_id': nhan_vien_id,
+                                    'dot_dang_ky_id': record.id,
+                                    'ngay_dang_ky': ngay_dang_ky,
+                                    'ca_lam_id': False,
+                                    'trang_thai': 'Chờ duyệt'
+                                })
+                                ngay_dang_ky += timedelta(days=1)
         return res
 
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_lich_nghi_le_form" model="ir.ui.view">
+            <field name="name">lich_nghi_le</field>
+            <field name="model">lich_nghi_le</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Danh sách ngày lễ</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="ten_ngay_le"/>
+                            <field name="nam"/>
+                            <field name="ngay_bat_dau"/>
+                            <field name="ngay_ket_thuc"/>
+                            <field name="so_ngay_le"/>
+                            <field name="ghi_chu"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_lich_nghi_le_tree" model="ir.ui.view">
+            <field name="name">lich_nghi_le</field>
+            <field name="model">lich_nghi_le</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ten_ngay_le"/>
+                    <field name="nam"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                    <field name="so_ngay_le"/>
+                    <field name="ghi_chu"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="lich_nghi_le_search">
+            <field name="model">lich_nghi_le</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ten_ngay_le"/>
+                    <field name="nam"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                    <field name="so_ngay_le"/>
+                    <field name="ghi_chu"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_lich_nghi_le" model="ir.actions.act_window">
+            <field name="name">Danh sách ngày lễ</field>
+            <field name="res_model">lich_nghi_le</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "lich_nghi_le_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    

@@ -46,7 +46,13 @@ class DangKyCaLam(models.Model):
         for record in self:
             if record.dot_dang_ky_id.trang_thai_dang_ky != "Đang mở":
                 raise ValidationError(f"Đợt đăng ký '{record.dot_dang_ky_id.ten_dot}' đã hết hạn đăng ký!")
-            
+    
+    @api.constrains('ngay_dang_ky')
+    def _check_ngay_dang_ky(self):
+        for record in self:
+            if record.ngay_dang_ky and record.ngay_dang_ky.weekday() == 6:
+                raise ValidationError("Không thể đăng ký ca làm vào ngày Chủ nhật!")
+                    
     def action_duyet(self):
         for record in self:
             if not record.ca_lam_id:

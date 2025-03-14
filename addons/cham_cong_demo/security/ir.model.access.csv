@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_dot_dang_ky_ca_lam,dot_dang_ky_ca_lam.dot_dang_ky_ca_lam,model_dot_dang_ky_ca_lam,base.group_user,1,1,1,1
 access_ca_lam,ca_lam.ca_lam,model_ca_lam,base.group_user,1,1,1,1
+access_lich_nghi_le,lich_nghi_le.lich_nghi_le,model_lich_nghi_le,base.group_user,1,1,1,1
 access_ngay_phep,ngay_phep.ngay_phep,model_ngay_phep,base.group_user,1,1,1,1
 access_dang_ky_ca_lam,dang_ky_ca_lam.dang_ky_ca_lam,model_dang_ky_ca_lam,base.group_user,1,1,1,1
 access_don_xin_nghi,don_xin_nghi.don_xin_nghi,model_don_xin_nghi,base.group_user,1,1,1,1

@@ -2,6 +2,7 @@
 
 from . import dot_dang_ky_ca_lam
 from . import ca_lam
+from . import lich_nghi_le
 from . import ngay_phep
 from . import dang_ky_ca_lam
 from . import don_xin_nghi

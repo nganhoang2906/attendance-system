@@ -30,6 +30,7 @@
         'security/ir.model.access.csv',
         'views/dot_dang_ky_ca_lam.xml',
         'views/ca_lam.xml',
+        'views/lich_nghi_le.xml',
         'views/ngay_phep.xml',
         'views/dang_ky_ca_lam.xml',
         'views/don_xin_nghi.xml',
