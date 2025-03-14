@@ -22,6 +22,12 @@ class CaLam(models.Model):
     gio_ket_thuc_nghi_giua_gio = fields.Selection(selection=GIO_SELECTION, string="Giờ kết thúc nghỉ giữa giờ")
     tong_thoi_gian = fields.Float("Tổng thời gian làm", compute="_compute_tong_thoi_gian", store=True)
 
+    @api.onchange('nghi_giua_gio')
+    def _onchange_nghi_giua_gio(self):
+        if not self.nghi_giua_gio:
+            self.gio_bat_dau_nghi_giua_gio = False
+            self.gio_ket_thuc_nghi_giua_gio = False
+    
     @api.depends('gio_vao', 'gio_ra', 'nghi_giua_gio', 'gio_bat_dau_nghi_giua_gio', 'gio_ket_thuc_nghi_giua_gio')
     def _compute_tong_thoi_gian(self):
         for record in self:
@@ -38,6 +44,12 @@ class CaLam(models.Model):
                 record.tong_thoi_gian = max(0, tong_thoi_gian)
             else:
                 record.tong_thoi_gian = 0
+    
+    @api.constrains('tong_thoi_gian')
+    def _check_tong_thoi_gian(self):
+        for record in self:
+            if record.tong_thoi_gian > 8:
+                raise ValidationError("Thời gian làm việc không được quá 8 tiếng mỗi ngày!")
     
     @api.constrains('gio_vao', 'gio_ra', 'gio_bat_dau_nghi_giua_gio', 'gio_ket_thuc_nghi_giua_gio', 'nghi_giua_gio')
     def _check_gio_lam_viec(self):

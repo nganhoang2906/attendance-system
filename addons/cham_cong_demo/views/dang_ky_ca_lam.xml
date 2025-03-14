@@ -8,7 +8,7 @@
                 <form>
                     <header>
                         <button name="action_duyet" type="object" string="Duyệt" class="btn-primary"
-                            attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                            attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt'), ('trang_thai', '!=', 'Đã hủy')]}"/>
                         <button name="action_tu_choi" type="object" string="Từ chối" class="btn-danger"
                             attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
                         <button name="action_huy" type="object" string="Hủy" class="btn-warning"
@@ -44,7 +44,7 @@
                         decoration-danger="trang_thai == 'Đã từ chối'"
                     />
                     <button name="action_duyet" type="object" string="Duyệt" class="btn-primary"
-                        attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                        attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt'), ('trang_thai', '!=', 'Đã hủy')]}"/>
                     <button name="action_tu_choi" type="object" string="Từ chối" class="btn-danger"
                         attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
                     <button name="action_huy" type="object" string="Hủy" class="btn-warning"

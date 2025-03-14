@@ -24,12 +24,6 @@
         'base',
         'nhan_su'
     ],
-    
-    'assets': {
-        'web.assets_backend': [
-            'cham_cong_demo/static/src/css/custom_style.css',
-        ],
-    },
 
     # always loaded
     'data': [
@@ -39,6 +33,7 @@
         'views/ngay_phep.xml',
         'views/dang_ky_ca_lam.xml',
         'views/don_xin_nghi.xml',
+        'views/don_xin_di_muon_ve_som.xml',
         'views/menu.xml',
     ],
     # only loaded in demonstration mode

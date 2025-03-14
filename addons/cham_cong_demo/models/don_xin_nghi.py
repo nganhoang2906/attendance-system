@@ -11,7 +11,8 @@ class DonXinNghi(models.Model):
     ngay_lam_don = fields.Date("Ngày làm đơn", required=True, default=fields.Date.today)
     ngay_bat_dau_nghi = fields.Date("Ngày bắt đầu nghỉ", required=True)
     ngay_ket_thuc_nghi = fields.Date("Ngày kết thúc nghỉ", required=True)
-    so_ngay_nghi = fields.Float("Số ngày nghỉ", compute="_compute_so_ngay_nghi", store=True)
+    so_ngay_phep_bi_tru = fields.Float("Số ngày phép bị trừ", compute="_compute_so_ngay_phep_bi_tru", store=True)
+    so_ngay_xin_nghi = fields.Float("Số ngày xin nghỉ", compute="_compute_so_ngay_xin_nghi", store=True)
     ngay_phep_id = fields.Many2one('ngay_phep', string="Ngày phép", compute="_compute_ngay_phep", store=True, readonly=False)
     ly_do = fields.Text("Lý do")
     nghi_nua_ngay = fields.Boolean("Nghỉ nửa ngày")
@@ -34,6 +35,8 @@ class DonXinNghi(models.Model):
         ],
         string="Loại nghỉ", default="Nghỉ phép", required=True
     )
+    giay_to = fields.Binary("Giấy tờ đính kèm")
+    giay_to_filename = fields.Char("Tên file")
     trang_thai = fields.Selection(
         [
             ('Chờ duyệt', "Chờ duyệt"),
@@ -57,6 +60,20 @@ class DonXinNghi(models.Model):
             else:
                 record.ngay_phep_id = False
 
+    @api.constrains('ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi')
+    def _check_ngay_nghi(self):
+        for record in self:
+            if record.ngay_bat_dau_nghi > record.ngay_ket_thuc_nghi:
+                raise ValidationError("Ngày bắt đầu phải trước hoặc bằng ngày kết thúc!")
+    
+    @api.depends('ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi')
+    def _compute_so_ngay_xin_nghi(self):
+        for record in self:
+            if record.ngay_bat_dau_nghi and record.ngay_ket_thuc_nghi:
+                record.so_ngay_xin_nghi = (record.ngay_ket_thuc_nghi - record.ngay_bat_dau_nghi).days + 1
+            else:
+                record.so_ngay_xin_nghi = 0
+
     @api.constrains('trang_thai', 'ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi', 'nhan_vien_id')
     def _check_don_da_duyet(self):
         for record in self:
@@ -77,17 +94,30 @@ class DonXinNghi(models.Model):
     def _onchange_nghi_nua_ngay(self):
         if not self.nghi_nua_ngay:
             self.buoi_nghi = False
-        
-        self._compute_so_ngay_nghi()
+        self._compute_so_ngay_phep_bi_tru()
 
-
-    @api.depends('ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi', 'nhan_vien_id', 'nghi_nua_ngay', 'buoi_nghi')
-    def _compute_so_ngay_nghi(self):
+    @api.constrains('nghi_nua_ngay', 'buoi_nghi')
+    def _check_buoi_nghi(self):
+        for record in self:
+            if record.nghi_nua_ngay and not record.buoi_nghi:
+                    raise ValidationError("Cần chọn buổi nghỉ")
+                
+    @api.constrains('nghi_nua_ngay', 'buoi_nghi')
+    def _check_buoi_nghi(self):
+        for record in self:
+            if record.nghi_nua_ngay and not record.buoi_nghi:
+                raise ValidationError("Bạn phải chọn buổi nghỉ khi đăng ký nghỉ nửa ngày!")
+    
+    @api.depends('ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi', 'nhan_vien_id', 'nghi_nua_ngay', 'buoi_nghi', 'loai_nghi')
+    def _compute_so_ngay_phep_bi_tru(self):
         for record in self:
             if not (record.ngay_bat_dau_nghi and record.ngay_ket_thuc_nghi and record.nhan_vien_id):
-                record.so_ngay_nghi = 0
+                record.so_ngay_phep_bi_tru = 0
                 continue
-
+            if record.loai_nghi != 'Nghỉ phép':
+                record.so_ngay_phep_bi_tru = 0
+                continue   
+            
             so_ngay_lam_ca_ngay = 0
             so_ngay_lam_sang = 0
             so_ngay_lam_chieu = 0
@@ -108,34 +138,22 @@ class DonXinNghi(models.Model):
                     so_ngay_lam_chieu += 1
             
             if record.nghi_nua_ngay:
-                record.so_ngay_nghi = so_ngay_lam_ca_ngay * 0.5 + so_ngay_lam_sang + so_ngay_lam_chieu
+                record.so_ngay_phep_bi_tru = so_ngay_lam_ca_ngay * 0.5 + so_ngay_lam_sang * 0.5 + so_ngay_lam_chieu * 0.5
             else:
-                record.so_ngay_nghi = so_ngay_lam_ca_ngay + so_ngay_lam_sang + so_ngay_lam_chieu
-
-    @api.constrains('nghi_nua_ngay', 'buoi_nghi')
-    def _check_buoi_nghi(self):
-        for record in self:
-            if record.nghi_nua_ngay and not record.buoi_nghi:
-                raise ValidationError("Bạn phải chọn buổi nghỉ khi đăng ký nghỉ nửa ngày!")
-
-    @api.constrains('ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi')
-    def _check_ngay_nghi(self):
-        for record in self:
-            if record.ngay_bat_dau_nghi > record.ngay_ket_thuc_nghi:
-                raise ValidationError("Ngày bắt đầu phải trước hoặc bằng ngày kết thúc!")
-    
-    @api.constrains('so_ngay_nghi', 'trang_thai', 'loai_nghi')
+                record.so_ngay_phep_bi_tru = so_ngay_lam_ca_ngay + so_ngay_lam_sang * 0.5 + so_ngay_lam_chieu * 0.5
+            
+    @api.constrains('so_ngay_phep_bi_tru', 'trang_thai', 'loai_nghi')
     def _check_han_muc_nghi(self):
         for record in self:
             if record.loai_nghi == 'Nghỉ phép' and record.ngay_phep_id:
-                if record.ngay_phep_id.so_ngay_con_lai < record.so_ngay_nghi:
+                if record.ngay_phep_id.so_ngay_con_lai < record.so_ngay_phep_bi_tru:
                     raise ValidationError(
                         f"Nhân viên {record.nhan_vien_id.ho_va_ten} không đủ ngày phép để nghỉ! Số ngày phép còn lại: {record.ngay_phep_id.so_ngay_con_lai}"
                     )
 
     def action_duyet(self):
         for record in self:
-            if record.trang_thai == 'Chờ duyệt':
+            if record.trang_thai in ['Chờ duyệt', 'Đã hủy']:
                 record.write({'trang_thai': 'Đã duyệt'})
 
     def action_tu_choi(self):
@@ -154,29 +172,37 @@ class DonXinNghi(models.Model):
                 allowed_fields = {'trang_thai'}
                 if any(field not in allowed_fields for field in vals.keys()):
                     raise ValidationError("Chỉ có thể cập nhật khi đơn ở trạng thái 'Chờ duyệt'!")
-
+            
             if 'nhan_vien_id' in vals:
                 raise ValidationError("Không thể chỉnh sửa nhân viên sau khi tạo đơn!")
         
             if 'trang_thai' in vals:
-                new_state = vals['trang_thai']
-                ngay_phep = record.ngay_phep_id.sudo()
+                for record in self:
+                    if record.trang_thai != 'Chờ duyệt':
+                        allowed_fields = {'trang_thai'}
+                        if any(field not in allowed_fields for field in vals.keys()):
+                            raise ValidationError("Chỉ có thể cập nhật khi đơn ở trạng thái 'Chờ duyệt'!")
+                    
+                    if 'nhan_vien_id' in vals:
+                        raise ValidationError("Không thể chỉnh sửa nhân viên sau khi tạo đơn!")
+                
+                    if 'trang_thai' in vals:
+                        new_state = vals['trang_thai']
+                        ngay_phep = record.ngay_phep_id.sudo()
+                        so_ngay_su_dung = record.so_ngay_phep_bi_tru
 
-                if not ngay_phep or record.loai_nghi != 'Nghỉ phép':
-                    continue  
-
-                if record.trang_thai == 'Đã duyệt' and new_state == 'Đã hủy':
-                    ngay_phep.write({
-                        'so_ngay_da_su_dung': ngay_phep.so_ngay_da_su_dung - record.so_ngay_nghi
-                    })
-
-                elif record.trang_thai == 'Chờ duyệt' and new_state == 'Đã duyệt':
-                    if ngay_phep.so_ngay_con_lai < record.so_ngay_nghi:
-                        raise ValidationError(f"Nhân viên {record.nhan_vien_id.ho_va_ten} không đủ ngày phép để nghỉ!")
-                    else:
-                        ngay_phep.write({
-                            'so_ngay_da_su_dung': ngay_phep.so_ngay_da_su_dung + record.so_ngay_nghi
-                        })
-                ngay_phep._compute_so_ngay_con_lai()
+                        if ngay_phep:
+                            if record.trang_thai == 'Đã duyệt' and new_state == 'Đã hủy':
+                                ngay_phep.write({
+                                    'so_ngay_da_su_dung': ngay_phep.so_ngay_da_su_dung - so_ngay_su_dung
+                                })
+                            elif record.trang_thai in ['Chờ duyệt', 'Đã hủy'] and new_state == 'Đã duyệt':
+                                if ngay_phep.so_ngay_con_lai < so_ngay_su_dung:
+                                    raise ValidationError(f"Nhân viên {record.nhan_vien_id.ho_va_ten} không đủ ngày phép để nghỉ!")
+                                else:
+                                    ngay_phep.write({
+                                        'so_ngay_da_su_dung': ngay_phep.so_ngay_da_su_dung + so_ngay_su_dung
+                                    })
+                            ngay_phep._compute_so_ngay_con_lai()
 
         return super(DonXinNghi, self).write(vals)

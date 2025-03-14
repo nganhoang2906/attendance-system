@@ -51,7 +51,7 @@ class DangKyCaLam(models.Model):
         for record in self:
             if not record.ca_lam_id:
                 raise ValidationError("Chưa chọn ca làm!")
-            if record.trang_thai == 'Chờ duyệt':
+            if record.trang_thai in ['Chờ duyệt', 'Đã hủy']:
                 record.write({'trang_thai': 'Đã duyệt'})
 
     def action_tu_choi(self):

@@ -36,6 +36,7 @@ class NhanVien(models.Model):
             ("Đang làm việc", "Đang làm việc"),
             ("Đã nghỉ việc", "Đã nghỉ việc"),
             ("Đang tạm nghỉ", "Đang tạm nghỉ"),
+            ("Đang nuôi con nhỏ", "Đang nuôi con nhỏ")
         ],
         string="Trạng thái",
         required=True,

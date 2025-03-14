@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="view_don_xin_nghi_form" model="ir.ui.view">
-            <field name="name">don_xin_nghi</field>
-            <field name="model">don_xin_nghi</field>
+        <record id="view_don_xin_di_muon_ve_som_form" model="ir.ui.view">
+            <field name="name">don_xin_di_muon_ve_som</field>
+            <field name="model">don_xin_di_muon_ve_som</field>
             <field name="arch" type="xml">
                 <form>
                     <header>
@@ -15,18 +15,20 @@
                             attrs="{'invisible': [('trang_thai', '!=', 'Đã duyệt')]}"/>
                     </header>
                     <sheet>
-                        <div class="oe_read_only" style="font-size:25px">Đơn xin nghỉ</div>
+                        <div class="oe_read_only" style="font-size:25px">Đơn xin đi muộn về sớm</div>
                         <group col="4" string="Thông tin chung">
                             <field name="nhan_vien_id"/>
                             <field name="ngay_lam_don"/>
-                            <field name="ngay_bat_dau_nghi"/>
-                            <field name="ngay_ket_thuc_nghi"/>
-                            <field name="loai_nghi"/>
+                            <field name="ngay_ap_dung"/>
+                            <field name="ca_lam_id"/>
+                            <field name="so_phut_xin_di_muon_dau_ca"/>
+                            <field name="so_phut_xin_ve_som_giua_ca"/>
+                            <field name="so_phut_xin_di_muon_giua_ca"/>
+                            <field name="so_phut_xin_ve_som_cuoi_ca"/>
+                            <field name="tong_thoi_gian_xin"/>
                             <field name="ly_do"/>
-                            <field name="nghi_nua_ngay"/>
-                            <field name="buoi_nghi" attrs="{'invisible': [('nghi_nua_ngay', '=', False)]}"/>
-                            <field name="so_ngay_xin_nghi"/>
-                            <field name="so_ngay_phep_bi_tru"/>
+                            <field name="su_dung_phep"/>
+                            <field name="so_ngay_phep_bi_tru" attrs="{'invisible': [('su_dung_phep', '=', False)]}"/>
                             <field name="giay_to" filename="giay_to_filename"/>
                             <field name="trang_thai" readonly="1"/>
                         </group>
@@ -35,21 +37,23 @@
             </field>
         </record>
 
-        <record id="view_don_xin_nghi_tree" model="ir.ui.view">
-            <field name="name">don_xin_nghi</field>
-            <field name="model">don_xin_nghi</field>
+        <record id="view_don_xin_di_muon_ve_som_tree" model="ir.ui.view">
+            <field name="name">don_xin_di_muon_ve_som</field>
+            <field name="model">don_xin_di_muon_ve_som</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="nhan_vien_id"/>
                     <field name="ngay_lam_don"/>
-                    <field name="ngay_bat_dau_nghi"/>
-                    <field name="ngay_ket_thuc_nghi"/>
-                    <field name="loai_nghi"/>
-                    <field name="nghi_nua_ngay"/>
-                    <field name="buoi_nghi"/>
-                    <field name="so_ngay_xin_nghi"/>
-                    <field name="so_ngay_phep_bi_tru"/>
+                    <field name="ngay_ap_dung"/>
+                    <field name="ca_lam_id"/>
+                    <field name="so_phut_xin_di_muon_dau_ca"/>
+                    <field name="so_phut_xin_ve_som_giua_ca"/>
+                    <field name="so_phut_xin_di_muon_giua_ca"/>
+                    <field name="so_phut_xin_ve_som_cuoi_ca"/>
+                    <field name="tong_thoi_gian_xin"/>
                     <field name="ly_do"/>
+                    <field name="su_dung_phep"/>
+                    <field name="so_ngay_phep_bi_tru"/>
                     <field name="giay_to_filename"/>
                     <field name="trang_thai" widget="badge"
                         decoration-info="trang_thai == 'Chờ duyệt'"
@@ -67,31 +71,33 @@
             </field>
         </record>
 
-        <record model="ir.ui.view" id="don_xin_nghi_search">
-            <field name="model">don_xin_nghi</field>
+        <record model="ir.ui.view" id="don_xin_di_muon_ve_som_search">
+            <field name="model">don_xin_di_muon_ve_som</field>
             <field name="arch" type="xml">
                 <search>
                     <field name="nhan_vien_id"/>
                     <field name="ngay_lam_don"/>
-                    <field name="ngay_bat_dau_nghi"/>
-                    <field name="ngay_ket_thuc_nghi"/>
-                    <field name="loai_nghi"/>
-                    <field name="nghi_nua_ngay"/>
-                    <field name="buoi_nghi"/>
-                    <field name="so_ngay_xin_nghi"/>
-                    <field name="so_ngay_phep_bi_tru"/>
+                    <field name="ngay_ap_dung"/>
+                    <field name="ca_lam_id"/>
+                    <field name="so_phut_xin_di_muon_dau_ca"/>
+                    <field name="so_phut_xin_ve_som_giua_ca"/>
+                    <field name="so_phut_xin_di_muon_giua_ca"/>
+                    <field name="so_phut_xin_ve_som_cuoi_ca"/>
+                    <field name="tong_thoi_gian_xin"/>
                     <field name="ly_do"/>
+                    <field name="su_dung_phep"/>
+                    <field name="so_ngay_phep_bi_tru"/>
                     <field name="giay_to_filename"/>
                     <field name="trang_thai"/>
                 </search>
             </field>
         </record>
 
-        <record id="action_don_xin_nghi" model="ir.actions.act_window">
-            <field name="name">Đơn xin nghỉ</field>
-            <field name="res_model">don_xin_nghi</field>
+        <record id="action_don_xin_di_muon_ve_som" model="ir.actions.act_window">
+            <field name="name">Đơn xin đi muộn về sớm</field>
+            <field name="res_model">don_xin_di_muon_ve_som</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref = "don_xin_nghi_search"/>
+            <field name="search_view_id" ref = "don_xin_di_muon_ve_som_search"/>
         </record>
     </data>
 </odoo>

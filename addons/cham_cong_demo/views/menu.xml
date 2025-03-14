@@ -47,5 +47,12 @@
             sequence="1"
             action="action_don_xin_nghi"
         />
+
+        <menuitem name="Đơn xin đi muộn về sớm" 
+            id="menu_don_xin_di_muon_ve_som" 
+            parent="menu_quan_ly_don_tu" 
+            sequence="1"
+            action="action_don_xin_di_muon_ve_som"
+        />
     </data>
 </odoo>

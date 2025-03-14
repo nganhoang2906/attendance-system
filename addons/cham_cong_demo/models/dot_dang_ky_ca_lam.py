@@ -142,35 +142,70 @@ class DotDangKyCaLam(models.Model):
         return record
 
     def write(self, vals):
-        res = super(DotDangKyCaLam, self).write(vals)
-
         for record in self:
-            if 'nhan_vien_ids' in vals or 'ngay_bat_dau' in vals or 'ngay_ket_thuc' in vals or 'thang_dang_ky' in vals or 'nam_dang_ky' in vals:
-                self.env['dang_ky_ca_lam'].search([('dot_dang_ky_id', '=', record.id)]).unlink()
+            if record.trang_thai_ap_dung == "Ngừng áp dụng":
+                raise ValidationError("Không thể chỉnh sửa đợt đăng ký đã Ngừng áp dụng!")
+            else:
+                nhan_vien_cu = set(record.nhan_vien_ids.ids)
+                ngay_bat_dau_cu = record.ngay_bat_dau
+                ngay_ket_thuc_cu = record.ngay_ket_thuc
 
-                nhan_vien_ids = record.nhan_vien_ids
-                ngay_bat_dau = record.ngay_bat_dau
-                ngay_ket_thuc = record.ngay_ket_thuc
+                res = super(DotDangKyCaLam, self).write(vals)
 
-                if nhan_vien_ids and ngay_bat_dau and ngay_ket_thuc:
-                    ngay_dang_ky = ngay_bat_dau
-                    while ngay_dang_ky <= ngay_ket_thuc:
-                        for nhan_vien in nhan_vien_ids:
+                ngay_bat_dau_moi = record.ngay_bat_dau
+                ngay_ket_thuc_moi = record.ngay_ket_thuc
+                nhan_vien_moi = set(record.nhan_vien_ids.ids)
+
+                if ngay_bat_dau_cu != ngay_bat_dau_moi or ngay_ket_thuc_cu != ngay_ket_thuc_moi:
+                    self.env['dang_ky_ca_lam'].search([
+                        ('dot_dang_ky_id', '=', record.id),
+                        '|', 
+                        ('ngay_dang_ky', '<', ngay_bat_dau_moi),
+                        ('ngay_dang_ky', '>', ngay_ket_thuc_moi)
+                    ]).unlink()
+
+                    ngay_dang_ky = ngay_bat_dau_moi
+                    while ngay_dang_ky <= ngay_ket_thuc_moi:
+                        for nhan_vien_id in nhan_vien_moi:
+                            if not self.env['dang_ky_ca_lam'].search([
+                                ('dot_dang_ky_id', '=', record.id),
+                                ('nhan_vien_id', '=', nhan_vien_id),
+                                ('ngay_dang_ky', '=', ngay_dang_ky)
+                            ]):
+                                self.env['dang_ky_ca_lam'].create({
+                                    'nhan_vien_id': nhan_vien_id,
+                                    'dot_dang_ky_id': record.id,
+                                    'ngay_dang_ky': ngay_dang_ky,
+                                    'ca_lam_id': False,
+                                    'trang_thai': 'Chờ duyệt'
+                                })
+                        ngay_dang_ky += timedelta(days=1)
+
+                if nhan_vien_cu != nhan_vien_moi:
+                    nhan_vien_xoa = nhan_vien_cu - nhan_vien_moi
+                    self.env['dang_ky_ca_lam'].search([
+                        ('dot_dang_ky_id', '=', record.id),
+                        ('nhan_vien_id', 'in', list(nhan_vien_xoa))
+                    ]).unlink()
+
+                    nhan_vien_them = nhan_vien_moi - nhan_vien_cu
+                    for nhan_vien_id in nhan_vien_them:
+                        ngay_dang_ky = ngay_bat_dau_moi
+                        while ngay_dang_ky <= ngay_ket_thuc_moi:
                             self.env['dang_ky_ca_lam'].create({
-                                'nhan_vien_id': nhan_vien.id,
+                                'nhan_vien_id': nhan_vien_id,
                                 'dot_dang_ky_id': record.id,
                                 'ngay_dang_ky': ngay_dang_ky,
                                 'ca_lam_id': False,
                                 'trang_thai': 'Chờ duyệt'
                             })
-                        ngay_dang_ky += timedelta(days=1)
+                            ngay_dang_ky += timedelta(days=1)
 
         return res
 
 
     def unlink(self):
         for record in self:
-            # Xóa tất cả các đăng ký ca làm liên quan trước khi xóa đợt đăng ký
             self.env['dang_ky_ca_lam'].search([('dot_dang_ky_id', '=', record.id)]).unlink()
         
         return super(DotDangKyCaLam, self).unlink()

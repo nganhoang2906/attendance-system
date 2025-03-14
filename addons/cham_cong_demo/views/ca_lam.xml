@@ -32,6 +32,7 @@
                     <field name="ten_ca"/>
                     <field name="gio_vao"/>
                     <field name="gio_ra"/>
+                    <field name="nghi_giua_gio"/>
                     <field name="gio_bat_dau_nghi_giua_gio"/>
                     <field name="gio_ket_thuc_nghi_giua_gio"/>
                     <field name="tong_thoi_gian"/>
@@ -47,6 +48,7 @@
                     <field name="ten_ca"/>
                     <field name="gio_vao"/>
                     <field name="gio_ra"/>
+                    <field name="nghi_giua_gio"/>
                     <field name="gio_bat_dau_nghi_giua_gio"/>
                     <field name="gio_ket_thuc_nghi_giua_gio"/>
                     <field name="tong_thoi_gian"/>
