@@ -72,17 +72,14 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="nhan_vien_id"/>
-                    <field name="ngay_lam_don"/>
-                    <field name="ngay_bat_dau_nghi"/>
-                    <field name="ngay_ket_thuc_nghi"/>
                     <field name="loai_nghi"/>
-                    <field name="nghi_nua_ngay"/>
-                    <field name="buoi_nghi"/>
-                    <field name="so_ngay_xin_nghi"/>
-                    <field name="so_ngay_phep_bi_tru"/>
-                    <field name="ly_do"/>
-                    <field name="giay_to_filename"/>
                     <field name="trang_thai"/>
+
+                    <searchpanel>
+                        <field name="nhan_vien_id" select="multi"/>
+                        <field name="loai_nghi" select="multi"/>
+                        <field name="trang_thai" select="multi"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>

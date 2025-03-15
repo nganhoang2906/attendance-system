@@ -48,8 +48,8 @@ class CaLam(models.Model):
     @api.constrains('tong_thoi_gian')
     def _check_tong_thoi_gian(self):
         for record in self:
-            if record.tong_thoi_gian > 8:
-                raise ValidationError("Thời gian làm việc không được quá 8 tiếng mỗi ngày!")
+            if record.tong_thoi_gian > 8 or record.tong_thoi_gian <= 0:
+                raise ValidationError("Thời gian làm việc phải > 0 và không được quá 8 tiếng mỗi ngày!")
     
     @api.constrains('gio_vao', 'gio_ra', 'gio_bat_dau_nghi_giua_gio', 'gio_ket_thuc_nghi_giua_gio', 'nghi_giua_gio')
     def _check_gio_lam_viec(self):
@@ -66,14 +66,14 @@ class CaLam(models.Model):
             gio_kt_nghi = time_to_minutes(record.gio_ket_thuc_nghi_giua_gio)
 
             if gio_vao and gio_ra and gio_vao >= gio_ra:
-                raise ValidationError("Giờ vào phải trước giờ ra.")
+                raise ValidationError("Giờ vào phải trước giờ ra!")
 
             if record.nghi_giua_gio:
                 if not gio_bd_nghi or not gio_kt_nghi:
-                    raise ValidationError("Cần nhập giờ nghỉ giữa giờ nếu bật chế độ nghỉ giữa giờ.")
+                    raise ValidationError("Cần nhập giờ nghỉ giữa giờ nếu bật chế độ nghỉ giữa giờ!")
                 if gio_bd_nghi <= gio_vao or gio_bd_nghi >= gio_ra:
-                    raise ValidationError("Giờ bắt đầu nghỉ giữa giờ phải sau giờ vào và trước giờ ra.")
+                    raise ValidationError("Giờ bắt đầu nghỉ giữa giờ phải sau giờ vào và trước giờ ra!")
                 if gio_kt_nghi <= gio_vao or gio_kt_nghi >= gio_ra:
-                    raise ValidationError("Giờ kết thúc nghỉ giữa giờ phải sau giờ vào và trước giờ ra.")
+                    raise ValidationError("Giờ kết thúc nghỉ giữa giờ phải sau giờ vào và trước giờ ra!")
                 if gio_kt_nghi <= gio_bd_nghi:
-                    raise ValidationError("Giờ kết thúc nghỉ giữa giờ phải sau giờ bắt đầu nghỉ giữa giờ.")
+                    raise ValidationError("Giờ kết thúc nghỉ giữa giờ phải sau giờ bắt đầu nghỉ giữa giờ!")

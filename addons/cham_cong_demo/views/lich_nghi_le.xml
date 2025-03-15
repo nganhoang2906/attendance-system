@@ -40,12 +40,11 @@
             <field name="model">lich_nghi_le</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="ten_ngay_le"/>
                     <field name="nam"/>
-                    <field name="ngay_bat_dau"/>
-                    <field name="ngay_ket_thuc"/>
-                    <field name="so_ngay_le"/>
-                    <field name="ghi_chu"/>
+
+                    <searchpanel>
+                        <field name="nam" select="multi"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>

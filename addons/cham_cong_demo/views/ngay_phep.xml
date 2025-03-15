@@ -46,12 +46,11 @@
                 <search>
                     <field name="nhan_vien_id"/>
                     <field name="nam"/>
-                    <field name="so_ngay_phep_tieu_chuan"/>
-                    <field name="so_ngay_phep_nam_truoc"/>
-                    <field name="so_ngay_phep_khac"/>
-                    <field name="tong_so_ngay_phep"/>
-                    <field name="so_ngay_da_su_dung"/>
-                    <field name="so_ngay_con_lai"/>
+
+                    <searchpanel>
+                        <field name="nhan_vien_id" select="multi"/>
+                        <field name="nam" select="multi"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>

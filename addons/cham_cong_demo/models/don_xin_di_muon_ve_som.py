@@ -1,10 +1,12 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from datetime import timedelta
 
 class DonXinDiMuonVeSom(models.Model):
     _name = 'don_xin_di_muon_ve_som'
     _description = "Đơn xin đi muộn về sớm"
     _rec_name = "nhan_vien_id"
+    _order = 'ngay_ap_dung desc'
 
     nhan_vien_id = fields.Many2one('nhan_vien', string="Nhân viên", required=True)
     ngay_lam_don = fields.Date("Ngày làm đơn", required=True, default=fields.Date.today)
@@ -43,6 +45,13 @@ class DonXinDiMuonVeSom(models.Model):
 
                 record.ca_lam_id = dkcl.ca_lam_id if dkcl else False
 
+    @api.constrains('ngay_lam_don', 'ngay_ap_dung')
+    def _check_khoang_cach_ngay(self):
+        for record in self:
+            if record.ngay_lam_don and record.ngay_ap_dung:
+                if record.ngay_lam_don > record.ngay_ap_dung + timedelta(days=3):
+                    raise ValidationError("Ngày làm đơn không được sau quá 3 ngày từ ngày áp dụng!")
+                
     @api.depends('so_phut_xin_di_muon_dau_ca', 'so_phut_xin_ve_som_giua_ca', 'so_phut_xin_di_muon_giua_ca', 'so_phut_xin_ve_som_cuoi_ca')
     def _compute_tong_thoi_gian_xin(self):
         for record in self:
@@ -71,11 +80,10 @@ class DonXinDiMuonVeSom(models.Model):
             if not record.ca_lam_id:
                 raise ValidationError("Nhân viên chưa đăng ký ca làm vào ngày này!")
 
-            if record.ca_lam_id.ten_ca == "Cả ngày":
-                gioi_han = 2 
-            else:
-                gioi_han = 1
-
+            if record.tong_thoi_gian_xin <= 0:
+                raise ValidationError("Chưa có thời gian xin đi muộn, về sớm!")
+            
+            gioi_han = record.ca_lam_id.tong_thoi_gian/4
             if record.tong_thoi_gian_xin > gioi_han:
                 raise ValidationError(f"Tổng thời gian xin đi muộn, về sớm không được vượt quá {gioi_han} giờ!")
 
@@ -90,7 +98,35 @@ class DonXinDiMuonVeSom(models.Model):
             ])
             if don_xin_nghi:
                 raise ValidationError("Nhân viên đã có đơn xin nghỉ vào ngày này!")
+    
+    @api.constrains('ngay_ap_dung', 'nhan_vien_id')
+    def _check_don_xin_di_muon_ve_som(self):
+        for record in self:
+            don_xin_di_muon_ve_som = self.env['don_xin_di_muon_ve_som'].search([
+                ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                ('trang_thai', '=', 'Đã duyệt'),
+                ('ngay_ap_dung', '=', record.ngay_ap_dung),
+            ])
+            if don_xin_di_muon_ve_som:
+                raise ValidationError("Nhân viên đã có đơn xin đi muộn về sớm vào ngày này!")        
 
+    @api.constrains('nhan_vien_id', 'ngay_ap_dung')
+    def _check_so_luong_don_trong_thang(self):
+        for record in self:
+            if record.nhan_vien_id and record.ngay_ap_dung:
+                ngay_dau_thang = record.ngay_ap_dung.replace(day=1)
+                ngay_cuoi_thang = (ngay_dau_thang + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+
+                so_don = self.env['don_xin_di_muon_ve_som'].search_count([
+                    ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                    ('ngay_ap_dung', '>=', ngay_dau_thang),
+                    ('ngay_ap_dung', '<=', ngay_cuoi_thang),
+                    ('trang_thai', '=', 'Đã duyệt')
+                ])
+
+                if so_don > 3:
+                    raise ValidationError(f"Nhân viên {record.nhan_vien_id.ho_va_ten} đã đạt giới hạn 3 đơn xin đi muộn về sớm trong tháng này!")
+            
     @api.depends('nhan_vien_id', 'ngay_ap_dung')
     def _compute_ngay_phep(self):
         for record in self:
@@ -124,6 +160,19 @@ class DonXinDiMuonVeSom(models.Model):
     def action_duyet(self):
         for record in self:
             if record.trang_thai in ['Chờ duyệt', 'Đã hủy']:
+                ngay_dau_thang = record.ngay_ap_dung.replace(day=1)
+                ngay_cuoi_thang = (ngay_dau_thang + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+
+                so_don = self.env['don_xin_di_muon_ve_som'].search_count([
+                    ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                    ('ngay_ap_dung', '>=', ngay_dau_thang),
+                    ('ngay_ap_dung', '<=', ngay_cuoi_thang),
+                    ('trang_thai', '=', 'Đã duyệt')
+                ])
+
+                if so_don >= 3:
+                    raise ValidationError(f"Nhân viên {record.nhan_vien_id.ho_va_ten} đã đạt giới hạn 3 đơn xin đi muộn về sớm trong tháng này!")
+                
                 record.write({'trang_thai': 'Đã duyệt'})
 
     def action_tu_choi(self):

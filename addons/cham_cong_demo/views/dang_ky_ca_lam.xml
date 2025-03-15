@@ -59,9 +59,15 @@
                 <search>
                     <field name="nhan_vien_id"/>
                     <field name="dot_dang_ky_id"/>
-                    <field name="ngay_dang_ky"/>
                     <field name="ca_lam_id"/>
                     <field name="trang_thai"/>
+                    
+                    <searchpanel>
+                        <field name="nhan_vien_id" select="multi"/>
+                        <field name="dot_dang_ky_id" select="multi"/>
+                        <field name="ca_lam_id" select="multi"/>
+                        <field name="trang_thai" select="multi"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>

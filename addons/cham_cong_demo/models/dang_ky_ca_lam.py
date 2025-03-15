@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from datetime import timedelta
 
 class DangKyCaLam(models.Model):
     _name = 'dang_ky_ca_lam'
@@ -50,7 +51,19 @@ class DangKyCaLam(models.Model):
     @api.constrains('ngay_dang_ky')
     def _check_ngay_dang_ky(self):
         for record in self:
-            if record.ngay_dang_ky and record.ngay_dang_ky.weekday() == 6:
+            ngay_le_list = set()
+            ngay_le_records = self.env['lich_nghi_le'].search([
+                ('ngay_bat_dau', '<=', ngay_ket_thuc),
+                ('ngay_ket_thuc', '>=', ngay_bat_dau)
+            ])
+            
+            for ngay_le in ngay_le_records:
+                ngay_hien_tai = ngay_le.ngay_bat_dau
+                while ngay_hien_tai <= ngay_le.ngay_ket_thuc:
+                    ngay_le_list.add(ngay_hien_tai)
+                    ngay_hien_tai += timedelta(days=1)
+                    
+            if record.ngay_dang_ky and record.ngay_dang_ky.weekday() == 6 and record.ngay_dang_ky not in ngay_le_list:
                 raise ValidationError("Không thể đăng ký ca làm vào ngày Chủ nhật!")
                     
     def action_duyet(self):

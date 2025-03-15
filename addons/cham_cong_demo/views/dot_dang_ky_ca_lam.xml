@@ -55,16 +55,19 @@
             <field name="model">dot_dang_ky_ca_lam</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="ma_dot"/>
-                    <field name="ten_dot"/>
+                    <field name="nhan_vien_ids"/>
                     <field name="nam_dang_ky"/>
                     <field name="thang_dang_ky"/>
-                    <field name="ngay_bat_dau"/>
-                    <field name="ngay_ket_thuc"/>
-                    <field name="han_dang_ky"/>
-                    <field name="nhan_vien_ids" widget="many2many_tags"/>
                     <field name="trang_thai_dang_ky"/>
                     <field name="trang_thai_ap_dung"/>
+
+                    <searchpanel>
+                        <field name="nhan_vien_ids" select="multi"/>
+                        <field name="nam_dang_ky" select="multi"/>
+                        <field name="thang_dang_ky" select="multi"/>
+                        <field name="trang_thai_dang_ky" select="multi"/>
+                        <field name="trang_thai_ap_dung" select="multi"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>

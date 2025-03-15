@@ -76,19 +76,12 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="nhan_vien_id"/>
-                    <field name="ngay_lam_don"/>
-                    <field name="ngay_ap_dung"/>
-                    <field name="ca_lam_id"/>
-                    <field name="so_phut_xin_di_muon_dau_ca"/>
-                    <field name="so_phut_xin_ve_som_giua_ca"/>
-                    <field name="so_phut_xin_di_muon_giua_ca"/>
-                    <field name="so_phut_xin_ve_som_cuoi_ca"/>
-                    <field name="tong_thoi_gian_xin"/>
-                    <field name="ly_do"/>
-                    <field name="su_dung_phep"/>
-                    <field name="so_ngay_phep_bi_tru"/>
-                    <field name="giay_to_filename"/>
                     <field name="trang_thai"/>
+                    
+                    <searchpanel>
+                        <field name="nhan_vien_id" select="multi"/>
+                        <field name="trang_thai" select="multi"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>
