@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_don_dang_ky_lam_them_gio_form" model="ir.ui.view">
+            <field name="name">don_dang_ky_lam_them_gio</field>
+            <field name="model">don_dang_ky_lam_them_gio</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_duyet" type="object" string="Duyệt" class="btn-primary"
+                            attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt'), ('trang_thai', '!=', 'Đã hủy')]}"/>
+                        <button name="action_tu_choi" type="object" string="Từ chối" class="btn-danger"
+                            attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                        <button name="action_huy" type="object" string="Hủy" class="btn-warning"
+                            attrs="{'invisible': [('trang_thai', '!=', 'Đã duyệt')]}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Đơn đăng ký làm thêm giờ</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="nhan_vien_id"/>
+                            <field name="ngay_lam_don"/>
+                            <field name="ngay_ap_dung"/>
+                            <field name="loai_ngay"/>
+                            <field name="ca_lam_id" attrs="{'readonly': [('loai_ngay', '=', 'Ngày làm việc')], 'required': [('loai_ngay', 'in', ['Ngày nghỉ', 'Ngày lễ'])]}"/>
+                            <field name="thoi_diem_lam_them"/>
+                            <field name="lam_ngoai_ca_tu"/>
+                            <field name="lam_ngoai_ca_den"/>
+                            <field name="tong_thoi_gian_lam_them"/>
+                            <field name="trang_thai"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_don_dang_ky_lam_them_gio_tree" model="ir.ui.view">
+            <field name="name">don_dang_ky_lam_them_gio</field>
+            <field name="model">don_dang_ky_lam_them_gio</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="nhan_vien_id"/>
+                    <field name="ngay_lam_don"/>
+                    <field name="ngay_ap_dung"/>
+                    <field name="loai_ngay"/>
+                    <field name="ca_lam_id"/>
+                    <field name="thoi_diem_lam_them"/>
+                    <field name="lam_ngoai_ca_tu"/>
+                    <field name="lam_ngoai_ca_den"/>
+                    <field name="tong_thoi_gian_lam_them"/>
+                    <field name="trang_thai" widget="badge"
+                        decoration-info="trang_thai == 'Chờ duyệt'"
+                        decoration-success="trang_thai == 'Đã duyệt'"
+                        decoration-muted="trang_thai == 'Đã hủy'"
+                        decoration-danger="trang_thai == 'Đã từ chối'"
+                    />
+                    <button name="action_duyet" type="object" string="Duyệt" class="btn-primary"
+                        attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt'), ('trang_thai', '!=', 'Đã hủy')]}"/>
+                    <button name="action_tu_choi" type="object" string="Từ chối" class="btn-danger"
+                        attrs="{'invisible': [('trang_thai', '!=', 'Chờ duyệt')]}"/>
+                    <button name="action_huy" type="object" string="Hủy" class="btn-warning"
+                        attrs="{'invisible': [('trang_thai', '!=', 'Đã duyệt')]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="don_dang_ky_lam_them_gio_search">
+            <field name="model">don_dang_ky_lam_them_gio</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="nhan_vien_id"/>
+                    <field name="trang_thai"/>
+                    <field name="loai_ngay"/>
+                    <field name="thoi_diem_lam_them"/>
+
+                    <searchpanel>
+                        <field name="nhan_vien_id" select="multi"/>
+                        <field name="trang_thai" select="multi"/>
+                        <field name="loai_ngay" select="multi"/>
+                        <field name="thoi_diem_lam_them" select="multi"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_don_dang_ky_lam_them_gio" model="ir.actions.act_window">
+            <field name="name">Đơn đăng ký làm thêm giờ</field>
+            <field name="res_model">don_dang_ky_lam_them_gio</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "don_dang_ky_lam_them_gio_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    

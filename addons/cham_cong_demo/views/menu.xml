@@ -75,5 +75,12 @@
             sequence="2"
             action="action_don_xin_di_muon_ve_som"
         />
+
+        <menuitem name="Đơn đăng ký làm thêm giờ" 
+            id="menu_don_dang_ky_lam_them_gio" 
+            parent="menu_quan_ly_don_tu" 
+            sequence="3"
+            action="action_don_dang_ky_lam_them_gio"
+        />
     </data>
 </odoo>

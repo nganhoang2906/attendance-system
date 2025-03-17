@@ -51,20 +51,17 @@ class DangKyCaLam(models.Model):
     @api.constrains('ngay_dang_ky')
     def _check_ngay_dang_ky(self):
         for record in self:
-            ngay_le_list = set()
-            ngay_le_records = self.env['lich_nghi_le'].search([
-                ('ngay_bat_dau', '<=', ngay_ket_thuc),
-                ('ngay_ket_thuc', '>=', ngay_bat_dau)
-            ])
+            if record.ngay_dang_ky:
+                ngay_le = self.env['lich_nghi_le'].search([
+                    ('ngay_bat_dau', '<=', record.ngay_dang_ky),
+                    ('ngay_ket_thuc', '>=', record.ngay_dang_ky)
+                ], limit=1)
             
-            for ngay_le in ngay_le_records:
-                ngay_hien_tai = ngay_le.ngay_bat_dau
-                while ngay_hien_tai <= ngay_le.ngay_ket_thuc:
-                    ngay_le_list.add(ngay_hien_tai)
-                    ngay_hien_tai += timedelta(days=1)
+                if ngay_le:
+                    raise ValidationError("Không thể đăng ký ca làm vào ngày lễ!")
                     
-            if record.ngay_dang_ky and record.ngay_dang_ky.weekday() == 6 and record.ngay_dang_ky not in ngay_le_list:
-                raise ValidationError("Không thể đăng ký ca làm vào ngày Chủ nhật!")
+                if record.ngay_dang_ky.weekday() == 6:
+                    raise ValidationError("Không thể đăng ký ca làm vào ngày nghỉ!")
                     
     def action_duyet(self):
         for record in self:

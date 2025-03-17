@@ -59,6 +59,13 @@ class DonXinNghi(models.Model):
             else:
                 record.ngay_phep_id = False
 
+    @api.constrains('ngay_lam_don', 'ngay_bat_dau_nghi')
+    def _check_ngay_lam_don(self):
+        for record in self:
+            if record.ngay_lam_don and record.ngay_bat_dau_nghi:
+                if record.ngay_lam_don > record.ngay_bat_dau_nghi:
+                    raise ValidationError("Không được làm đơn sau ngày nghỉ!")
+
     @api.constrains('ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi')
     def _check_ngay_nghi(self):
         for record in self:
@@ -69,9 +76,10 @@ class DonXinNghi(models.Model):
     def _compute_so_ngay_xin_nghi(self):
         for record in self:
             if record.ngay_bat_dau_nghi and record.ngay_ket_thuc_nghi:
-                record.so_ngay_xin_nghi = (record.ngay_ket_thuc_nghi - record.ngay_bat_dau_nghi).days + 1
-            else:
-                record.so_ngay_xin_nghi = 0
+                if record.ngay_bat_dau_nghi <= record.ngay_ket_thuc_nghi:
+                    record.so_ngay_xin_nghi = (record.ngay_ket_thuc_nghi - record.ngay_bat_dau_nghi).days + 1
+                else:
+                    record.so_ngay_xin_nghi = 0
 
     @api.constrains('trang_thai', 'ngay_bat_dau_nghi', 'ngay_ket_thuc_nghi', 'nhan_vien_id')
     def _check_don_da_duyet(self):

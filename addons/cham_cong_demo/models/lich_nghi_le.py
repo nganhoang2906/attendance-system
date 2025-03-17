@@ -34,7 +34,8 @@ class LichNghiLe(models.Model):
     def _compute_so_ngay_le(self):
         for record in self:
             if record.ngay_bat_dau and record.ngay_ket_thuc:
-                record.so_ngay_le = (record.ngay_ket_thuc - record.ngay_bat_dau).days + 1
-            else:
-                record.so_ngay_le = 0
+                if record.ngay_bat_dau < record.ngay_ket_thuc:
+                    record.so_ngay_le = (record.ngay_ket_thuc - record.ngay_bat_dau).days + 1
+                else:
+                    record.so_ngay_le = 0
                 

@@ -35,6 +35,7 @@
         'views/dang_ky_ca_lam.xml',
         'views/don_xin_nghi.xml',
         'views/don_xin_di_muon_ve_som.xml',
+        'views/don_dang_ky_lam_them_gio.xml',
         'views/menu.xml',
     ],
     # only loaded in demonstration mode

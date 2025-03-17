@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from datetime import timedelta
+import math
 
 class DonXinDiMuonVeSom(models.Model):
     _name = 'don_xin_di_muon_ve_som'
@@ -46,7 +47,7 @@ class DonXinDiMuonVeSom(models.Model):
                 record.ca_lam_id = dkcl.ca_lam_id if dkcl else False
 
     @api.constrains('ngay_lam_don', 'ngay_ap_dung')
-    def _check_khoang_cach_ngay(self):
+    def _check_ngay_lam_don(self):
         for record in self:
             if record.ngay_lam_don and record.ngay_ap_dung:
                 if record.ngay_lam_don > record.ngay_ap_dung + timedelta(days=3):
@@ -56,13 +57,13 @@ class DonXinDiMuonVeSom(models.Model):
     def _compute_tong_thoi_gian_xin(self):
         for record in self:
             tong_phut = sum([
-                record.so_phut_xin_di_muon_dau_ca,
-                record.so_phut_xin_ve_som_giua_ca,
-                record.so_phut_xin_di_muon_giua_ca,
-                record.so_phut_xin_ve_som_cuoi_ca
+                max(record.so_phut_xin_di_muon_dau_ca, 0),
+                max(record.so_phut_xin_ve_som_giua_ca, 0),
+                max(record.so_phut_xin_di_muon_giua_ca, 0),
+                max(record.so_phut_xin_ve_som_cuoi_ca, 0)
             ])
-            record.tong_thoi_gian_xin = round(tong_phut / 60, 2)
-    
+            record.tong_thoi_gian_xin = math.ceil(tong_phut / 60 * 100) / 100
+
     @api.constrains('so_phut_xin_di_muon_dau_ca', 'so_phut_xin_ve_som_giua_ca', 'so_phut_xin_di_muon_giua_ca', 'so_phut_xin_ve_som_cuoi_ca', 'tong_thoi_gian_xin')
     def _check_so_phut_hop_le(self):
         for record in self:
@@ -74,8 +75,10 @@ class DonXinDiMuonVeSom(models.Model):
             ]
 
             for so_phut in so_phut_fields:
-                if so_phut < 0 or so_phut > 120:
-                    raise ValidationError("Số phút đi muộn/về sớm chỉ được nằm trong khoảng 0-120 phút!")
+                if so_phut < 0:
+                    raise ValidationError("Số phút đi muộn/về sớm không hợp lệ!")
+                elif so_phut > 120:
+                    raise ValidationError("Chỉ được đi muộn/về sớm tối đa 120 phút!")
 
             if not record.ca_lam_id:
                 raise ValidationError("Nhân viên chưa đăng ký ca làm vào ngày này!")
@@ -99,16 +102,18 @@ class DonXinDiMuonVeSom(models.Model):
             if don_xin_nghi:
                 raise ValidationError("Nhân viên đã có đơn xin nghỉ vào ngày này!")
     
-    @api.constrains('ngay_ap_dung', 'nhan_vien_id')
-    def _check_don_xin_di_muon_ve_som(self):
+    @api.constrains('ngay_ap_dung', 'nhan_vien_id', 'trang_thai')
+    def _check_don_da_duyet(self):
         for record in self:
-            don_xin_di_muon_ve_som = self.env['don_xin_di_muon_ve_som'].search([
-                ('nhan_vien_id', '=', record.nhan_vien_id.id),
-                ('trang_thai', '=', 'Đã duyệt'),
-                ('ngay_ap_dung', '=', record.ngay_ap_dung),
-            ])
-            if don_xin_di_muon_ve_som:
-                raise ValidationError("Nhân viên đã có đơn xin đi muộn về sớm vào ngày này!")        
+            if record.trang_thai == 'Đã duyệt':
+                don_xin_di_muon_ve_som = self.env['don_xin_di_muon_ve_som'].search([
+                    ('id', '!=', record.id),
+                    ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                    ('trang_thai', '=', 'Đã duyệt'),
+                    ('ngay_ap_dung', '=', record.ngay_ap_dung),
+                ])
+                if don_xin_di_muon_ve_som:
+                    raise ValidationError("Nhân viên đã có đơn xin đi muộn về sớm vào ngày này!")        
 
     @api.constrains('nhan_vien_id', 'ngay_ap_dung')
     def _check_so_luong_don_trong_thang(self):
@@ -149,7 +154,7 @@ class DonXinDiMuonVeSom(models.Model):
     @api.depends('tong_thoi_gian_xin')
     def _compute_so_ngay_phep_bi_tru(self):
         for record in self:
-            record.so_ngay_phep_bi_tru = round(record.tong_thoi_gian_xin / 8, 2)
+            record.so_ngay_phep_bi_tru = math.ceil(record.tong_thoi_gian_xin / 8 * 100) / 100
     
     @api.constrains('su_dung_phep', 'tong_thoi_gian_xin')
     def _check_su_dung_phep(self):
