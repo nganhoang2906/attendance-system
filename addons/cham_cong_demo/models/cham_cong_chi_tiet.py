@@ -15,7 +15,7 @@ class ChamCongChiTiet(models.Model):
             ('Ngày nghỉ', "Ngày nghỉ"),
             ('Ngày lễ', "Ngày lễ"),
         ],
-        string="Trạng thái", compute="_compute_ngay_lam_viec", store=True
+        string="Ngày làm việc", compute="_compute_ngay_lam_viec", store=True
     )
     ca_lam_id = fields.Many2one('ca_lam', string="Ca làm", compute="_compute_ca_lam_id", store=True)
 
