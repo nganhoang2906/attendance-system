@@ -18,9 +18,6 @@ class DonXinDiMuonVeSom(models.Model):
     so_phut_xin_di_muon_giua_ca = fields.Integer("Đi muộn giữa ca (phút)", default=0)
     so_phut_xin_ve_som_cuoi_ca = fields.Integer("Về sớm cuối ca (phút)", default=0)
     tong_thoi_gian_xin = fields.Float("Tổng thời gian xin (giờ)", compute="_compute_tong_thoi_gian_xin", store=True)
-    su_dung_phep = fields.Boolean("Sử dụng phép", default=False)
-    ngay_phep_id = fields.Many2one('ngay_phep', string="Ngày phép", compute="_compute_ngay_phep", store=True, readonly=False)
-    so_ngay_phep_bi_tru = fields.Float("Số ngày phép bị trừ", compute="_compute_so_ngay_phep_bi_tru", store=True)
     ly_do = fields.Text("Lý do")
     giay_to = fields.Binary("Giấy tờ đính kèm")
     giay_to_filename = fields.Char("Tên file")
@@ -90,6 +87,12 @@ class DonXinDiMuonVeSom(models.Model):
             if record.tong_thoi_gian_xin > gioi_han:
                 raise ValidationError(f"Tổng thời gian xin đi muộn, về sớm không được vượt quá {gioi_han} giờ!")
 
+    @api.constrains('nhan_vien_id', 'ngay_ap_dung')
+    def _check_ca_lam(self):
+        for record in self:
+            if not record.ca_lam_id:
+                raise ValidationError("Nhân viên chưa đăng ký ca làm vào ngày này!")
+
     @api.constrains('ngay_ap_dung', 'nhan_vien_id')
     def _check_don_xin_nghi(self):
         for record in self:
@@ -132,36 +135,6 @@ class DonXinDiMuonVeSom(models.Model):
                 if so_don > 3:
                     raise ValidationError(f"Nhân viên {record.nhan_vien_id.ho_va_ten} đã đạt giới hạn 3 đơn xin đi muộn về sớm trong tháng này!")
             
-    @api.depends('nhan_vien_id', 'ngay_ap_dung')
-    def _compute_ngay_phep(self):
-        for record in self:
-            if record.nhan_vien_id and record.ngay_ap_dung:
-                nam = str(record.ngay_ap_dung.year)
-                ngay_phep = self.env['ngay_phep'].search([
-                    ('nhan_vien_id', '=', record.nhan_vien_id.id),
-                    ('nam', '=', nam)
-                ], limit=1)
-                record.ngay_phep_id = ngay_phep if ngay_phep else False
-            else:
-                record.ngay_phep_id = False
-    
-    @api.onchange('su_dung_phep')
-    def _onchange_su_dung_phep(self):
-        if not self.su_dung_phep:
-            self.so_ngay_phep_bi_tru = 0
-        self._compute_so_ngay_phep_bi_tru()
-    
-    @api.depends('tong_thoi_gian_xin')
-    def _compute_so_ngay_phep_bi_tru(self):
-        for record in self:
-            record.so_ngay_phep_bi_tru = math.ceil(record.tong_thoi_gian_xin / 8 * 100) / 100
-    
-    @api.constrains('su_dung_phep', 'tong_thoi_gian_xin')
-    def _check_su_dung_phep(self):
-        for record in self:
-            if record.su_dung_phep and record.tong_thoi_gian_xin <= 1:
-                raise ValidationError("Tổng thời gian xin đi muộn về sớm phải lớn hơn 1 giờ mới được sử dụng phép!")
-                        
     def action_duyet(self):
         for record in self:
             if record.trang_thai in ['Chờ duyệt', 'Đã hủy']:
@@ -199,24 +172,5 @@ class DonXinDiMuonVeSom(models.Model):
             
             if 'nhan_vien_id' in vals:
                 raise ValidationError("Không thể chỉnh sửa nhân viên sau khi tạo đơn!")
-        
-            if 'trang_thai' in vals:
-                new_state = vals['trang_thai']
-                ngay_phep = record.ngay_phep_id.sudo()
-                so_ngay_su_dung = record.so_ngay_phep_bi_tru
-
-                if record.su_dung_phep and ngay_phep:
-                    if record.trang_thai == 'Đã duyệt' and new_state == 'Đã hủy':
-                        ngay_phep.write({
-                            'so_ngay_da_su_dung': ngay_phep.so_ngay_da_su_dung - so_ngay_su_dung
-                        })
-                    elif record.trang_thai in ['Chờ duyệt', 'Đã hủy'] and new_state == 'Đã duyệt':
-                        if ngay_phep.so_ngay_con_lai < so_ngay_su_dung:
-                            raise ValidationError(f"Nhân viên {record.nhan_vien_id.ho_va_ten} không đủ ngày phép để nghỉ!")
-                        else:
-                            ngay_phep.write({
-                                'so_ngay_da_su_dung': ngay_phep.so_ngay_da_su_dung + so_ngay_su_dung
-                            })
-                    ngay_phep._compute_so_ngay_con_lai()
 
         return super(DonXinDiMuonVeSom, self).write(vals)

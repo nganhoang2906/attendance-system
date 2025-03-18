@@ -154,25 +154,19 @@ class DonDangKyLamThemGio(models.Model):
     @api.depends('thoi_diem_lam_them', 'lam_ngoai_ca_tu', 'lam_ngoai_ca_den', 'ca_lam_id', 'loai_ngay')
     def _compute_tong_thoi_gian_lam_them(self):
         for record in self:
-            if record.thoi_diem_lam_them == 'Sau ca' and record.ca_lam_id:
-                record.lam_ngoai_ca_tu = record.ca_lam_id.gio_ra
-            
-            elif record.thoi_diem_lam_them == 'Trước ca' and record.ca_lam_id:
-                record.lam_ngoai_ca_den = record.ca_lam_id.gio_vao
-            
-            if record.lam_ngoai_ca_tu and record.lam_ngoai_ca_den:
-                gio_bd = int(record.lam_ngoai_ca_tu[:2]) + int(record.lam_ngoai_ca_tu[3:]) / 60
-                gio_kt = int(record.lam_ngoai_ca_den[:2]) + int(record.lam_ngoai_ca_den[3:]) / 60
-                
-                if gio_kt > gio_bd:
-                    thoi_gian_lam_them = gio_kt - gio_bd
-                else:
-                    thoi_gian_lam_them = 0
+            if not record.lam_ngoai_ca_tu or not record.lam_ngoai_ca_den:
+                record.tong_thoi_gian_lam_them = 0
+                continue
+
+            if record.lam_ngoai_ca_den > record.lam_ngoai_ca_tu:
+                thoi_gian_lam_them = record.lam_ngoai_ca_den - record.lam_ngoai_ca_tu
+            else:
+                thoi_gian_lam_them = 0
 
                 if record.loai_ngay in ['Ngày nghỉ', 'Ngày lễ'] and record.ca_lam_id:
                     thoi_gian_lam_them += record.ca_lam_id.tong_thoi_gian
 
-                record.tong_thoi_gian_lam_them = thoi_gian_lam_them
+            record.tong_thoi_gian_lam_them = thoi_gian_lam_them
     
     @api.constrains('tong_thoi_gian_lam_them', 'ca_lam_id', 'loai_ngay')
     def _check_tong_thoi_gian_lam_them(self):
@@ -200,3 +194,15 @@ class DonDangKyLamThemGio(models.Model):
         for record in self:
             if record.trang_thai == 'Đã duyệt':
                 record.write({'trang_thai': 'Đã hủy'})
+                
+    def write(self, vals):
+        for record in self:
+            if record.trang_thai != 'Chờ duyệt':
+                allowed_fields = {'trang_thai'}
+                if any(field not in allowed_fields for field in vals.keys()):
+                    raise ValidationError("Chỉ có thể cập nhật khi đơn ở trạng thái 'Chờ duyệt'!")
+            
+            if 'nhan_vien_id' in vals:
+                raise ValidationError("Không thể chỉnh sửa nhân viên sau khi tạo đơn!")
+
+        return super(DonDangKyLamThemGio, self).write(vals)

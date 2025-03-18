@@ -21,7 +21,7 @@
                             <field name="ngay_lam_don"/>
                             <field name="ngay_ap_dung"/>
                             <field name="loai_ngay"/>
-                            <field name="ca_lam_id" attrs="{'readonly': [('loai_ngay', '=', 'Ngày làm việc')], 'required': [('loai_ngay', 'in', ['Ngày nghỉ', 'Ngày lễ'])]}"/>
+                            <field name="ca_lam_id" attrs="{'readonly': [('loai_ngay', '=', 'Ngày thường')], 'required': [('loai_ngay', 'in', ['Ngày nghỉ', 'Ngày lễ'])]}"/>
                             <field name="thoi_diem_lam_them"/>
                             <field name="lam_ngoai_ca_tu"/>
                             <field name="lam_ngoai_ca_den"/>
