@@ -9,7 +9,7 @@ class DonDangKyLamThemGio(models.Model):
     _order = 'ngay_ap_dung desc'
     
     GIO_SELECTION = [
-        (f"{h:02}:{m:02}", f"{h:02}:{m:02}") for h in range(24) for m in (0, 30)
+        (f"{h:02}:{m:02}:00", f"{h:02}:{m:02}:00") for h in range(24) for m in (0, 30)
     ]
     
     nhan_vien_id = fields.Many2one('nhan_vien', string="Nhân viên", required=True)
@@ -158,28 +158,28 @@ class DonDangKyLamThemGio(models.Model):
             if not record.ca_lam_id:
                 raise ValidationError("Chưa có ca làm!")
 
-            gio_vao = record.ca_lam_id.gio_vao
-            gio_ra = record.ca_lam_id.gio_ra
+            gio_vao_ca = record.ca_lam_id.gio_vao_ca
+            gio_ra_ca = record.ca_lam_id.gio_ra_ca
 
             if record.lam_ngoai_ca_tu and record.lam_ngoai_ca_den:
                 if record.lam_ngoai_ca_tu >= record.lam_ngoai_ca_den:
                     raise ValidationError("Thời gian bắt đầu làm ngoài ca phải trước thời gian kết thúc làm ngoài ca!")
 
-                if not (record.lam_ngoai_ca_den == gio_vao or record.lam_ngoai_ca_tu == gio_ra):
+                if not (record.lam_ngoai_ca_den == gio_vao_ca or record.lam_ngoai_ca_tu == gio_ra_ca):
                     raise ValidationError("Thời gian làm thêm phải ngay trước hoặc ngay sau ca làm!")
     
     @api.depends('thoi_diem_lam_them', 'lam_ngoai_ca_tu', 'lam_ngoai_ca_den', 'ca_lam_id', 'loai_ngay')
     def _compute_tong_thoi_gian_lam_them(self):
         for record in self:
             if record.thoi_diem_lam_them == 'Sau ca' and record.ca_lam_id:
-                record.lam_ngoai_ca_tu = record.ca_lam_id.gio_ra
+                record.lam_ngoai_ca_tu = record.ca_lam_id.gio_ra_ca
             
             elif record.thoi_diem_lam_them == 'Trước ca' and record.ca_lam_id:
-                record.lam_ngoai_ca_den = record.ca_lam_id.gio_vao
+                record.lam_ngoai_ca_den = record.ca_lam_id.gio_vao_ca
             
             if record.lam_ngoai_ca_tu and record.lam_ngoai_ca_den:
-                gio_bd = int(record.lam_ngoai_ca_tu[:2]) + int(record.lam_ngoai_ca_tu[3:]) / 60
-                gio_kt = int(record.lam_ngoai_ca_den[:2]) + int(record.lam_ngoai_ca_den[3:]) / 60
+                gio_bd = int(record.lam_ngoai_ca_tu[:2]) + int(record.lam_ngoai_ca_tu[3:5]) / 60
+                gio_kt = int(record.lam_ngoai_ca_den[:2]) + int(record.lam_ngoai_ca_den[3:5]) / 60
                 
                 if gio_kt > gio_bd:
                     thoi_gian_lam_them = gio_kt - gio_bd

@@ -11,12 +11,12 @@
                         <group col="4" string="Thông tin chung">
                             <field name="ma_ca"/>
                             <field name="ten_ca"/>
-                            <field name="gio_vao"/>
-                            <field name="gio_ra"/>
-                            <field name="nghi_giua_gio"/>
+                            <field name="gio_vao_ca"/>
+                            <field name="gio_ra_ca"/>
+                            <field name="nghi_giua_ca"/>
                             <field name="tong_thoi_gian"/>
-                            <field name="gio_bat_dau_nghi_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
-                            <field name="gio_ket_thuc_nghi_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
+                            <field name="gio_bat_dau_nghi_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="gio_ket_thuc_nghi_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
                         </group>
                     </sheet>
                 </form>
@@ -30,11 +30,11 @@
                 <tree>
                     <field name="ma_ca"/>
                     <field name="ten_ca"/>
-                    <field name="gio_vao"/>
-                    <field name="gio_ra"/>
-                    <field name="nghi_giua_gio"/>
-                    <field name="gio_bat_dau_nghi_giua_gio"/>
-                    <field name="gio_ket_thuc_nghi_giua_gio"/>
+                    <field name="gio_vao_ca"/>
+                    <field name="gio_ra_ca"/>
+                    <field name="nghi_giua_ca"/>
+                    <field name="gio_bat_dau_nghi_giua_ca"/>
+                    <field name="gio_ket_thuc_nghi_giua_ca"/>
                     <field name="tong_thoi_gian"/>
                 </tree>
             </field>
@@ -46,11 +46,11 @@
                 <search>
                     <field name="ma_ca"/>
                     <field name="ten_ca"/>
-                    <field name="gio_vao"/>
-                    <field name="gio_ra"/>
-                    <field name="nghi_giua_gio"/>
-                    <field name="gio_bat_dau_nghi_giua_gio"/>
-                    <field name="gio_ket_thuc_nghi_giua_gio"/>
+                    <field name="gio_vao_ca"/>
+                    <field name="gio_ra_ca"/>
+                    <field name="nghi_giua_ca"/>
+                    <field name="gio_bat_dau_nghi_giua_ca"/>
+                    <field name="gio_ket_thuc_nghi_giua_ca"/>
                     <field name="tong_thoi_gian"/>
                 </search>
             </field>

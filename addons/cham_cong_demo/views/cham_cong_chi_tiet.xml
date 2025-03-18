@@ -11,22 +11,38 @@
                         <group col="4" string="Thông tin chung">
                             <field name="nhan_vien_id"/>
                             <field name="ngay_cham_cong"/>
+                            <field name="ngay_lam_viec"/>
                             <field name="ca_lam_id"/>
-                            <field name="nghi_giua_gio"/>
-                            <field name="gio_vao"/>
-                            <field name="cham_vao" widget="float_time"/>
-                            <field name="gio_bat_dau_nghi_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
-                            <field name="cham_ra_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
-                            <field name="gio_ket_thuc_nghi_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
-                            <field name="cham_vao_giua_gio" attrs="{'invisible': [('nghi_giua_gio', '=', False)]}"/>
-                            <field name="gio_ra"/>
-                            <field name="cham_ra" widget="float_time"/>
+                            <field name="nghi_giua_ca"/>
+                            <field name="trang_thai_cham_cong"/>
                             <field name="so_phut_di_muon"/>
                             <field name="so_phut_ve_som"/>
                             <field name="so_gio_lam_them"/>
                             <field name="tong_gio_lam"/>
                             <field name="so_gio_cong"/>
                             <field name="trang_thai"/>
+                        </group>
+
+                        <group col="4" string="Chi tiết chấm công">    
+                            <field name="gio_vao_ca"/>
+                            <field name="cham_vao_ca"/>
+                            <field name="trang_thai_vao_ca"/>
+                            <field name="so_phut_di_muon_dau_ca"/>
+                            
+                            <field name="gio_bat_dau_nghi_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="cham_ra_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="trang_thai_ra_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="so_phut_ve_som_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+
+                            <field name="gio_ket_thuc_nghi_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="cham_vao_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="trang_thai_vao_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="so_phut_di_muon_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+
+                            <field name="gio_ra_ca"/>
+                            <field name="cham_ra_ca"/>
+                            <field name="trang_thai_ra_ca"/>
+                            <field name="so_phut_ve_som_cuoi_ca"/>
                         </group>
                     </sheet>
                 </form>
@@ -39,22 +55,37 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="nhan_vien_id"/>
+                    <field name="ngay_lam_viec"/>
                     <field name="ngay_cham_cong"/>
                     <field name="ca_lam_id"/>
-                    <field name="nghi_giua_gio"/>
-                    <field name="gio_vao"/>
-                    <field name="cham_vao"/>
-                    <field name="gio_bat_dau_nghi_giua_gio"/>
-                    <field name="cham_ra_giua_gio"/>
-                    <field name="gio_ket_thuc_nghi_giua_gio"/>
-                    <field name="cham_vao_giua_gio"/>
-                    <field name="gio_ra"/>
-                    <field name="cham_ra"/>
+                    <field name="nghi_giua_ca"/>
+                    <field name="gio_vao_ca"/>
+                    
+                    <field name="cham_vao_ca"/>
+                    <field name="trang_thai_vao_ca"/>
+                    <field name="so_phut_di_muon_dau_ca"/>
+                    
+                    <field name="gio_bat_dau_nghi_giua_ca"/>
+                    <field name="cham_ra_giua_ca"/>
+                    <field name="trang_thai_ra_giua_ca"/>
+                    <field name="so_phut_ve_som_giua_ca"/>
+
+                    <field name="gio_ket_thuc_nghi_giua_ca"/>
+                    <field name="cham_vao_giua_ca"/>
+                    <field name="trang_thai_vao_giua_ca"/>
+                    <field name="so_phut_di_muon_giua_ca"/>
+
+                    <field name="gio_ra_ca"/>
+                    <field name="cham_ra_ca"/>
+                    <field name="trang_thai_ra_ca"/>
+                    <field name="so_phut_ve_som_cuoi_ca"/>
+                    
                     <field name="so_phut_di_muon"/>
                     <field name="so_phut_ve_som"/>
                     <field name="so_gio_lam_them"/>
                     <field name="tong_gio_lam"/>
                     <field name="so_gio_cong"/>
+                    <field name="trang_thai_cham_cong"/>
                     <field name="trang_thai"/>
                 </tree>
             </field>
@@ -66,6 +97,8 @@
                 <search>
                     <field name="nhan_vien_id"/>
                     <field name="ca_lam_id"/>
+                    <field name="ngay_lam_viec"/>
+                    <field name="trang_thai_cham_cong"/>
                     <field name="trang_thai"/>
                 </search>
             </field>

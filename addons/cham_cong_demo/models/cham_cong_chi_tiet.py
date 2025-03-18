@@ -19,16 +19,37 @@ class ChamCongChiTiet(models.Model):
     )
     ca_lam_id = fields.Many2one('ca_lam', string="Ca làm", compute="_compute_ca_lam_id", store=True)
 
-    gio_vao = fields.Selection(related='ca_lam_id.gio_vao', string="Giờ vào", store=True)
-    gio_ra = fields.Selection(related='ca_lam_id.gio_ra', string="Giờ ra", store=True)
-    nghi_giua_gio = fields.Boolean(related='ca_lam_id.nghi_giua_gio', string="Nghỉ giữa giờ", store=True)
-    gio_bat_dau_nghi_giua_gio = fields.Selection(related='ca_lam_id.gio_bat_dau_nghi_giua_gio', string="Giờ bắt đầu nghỉ giữa giờ", store=True)
-    gio_ket_thuc_nghi_giua_gio = fields.Selection(related='ca_lam_id.gio_ket_thuc_nghi_giua_gio', string="Giờ kết thúc nghỉ giữa giờ", store=True)
+    gio_vao_ca = fields.Selection(related='ca_lam_id.gio_vao_ca', string="Giờ vào ca", store=True)
+    gio_ra_ca = fields.Selection(related='ca_lam_id.gio_ra_ca', string="Giờ ra ca", store=True)
+    nghi_giua_ca = fields.Boolean(related='ca_lam_id.nghi_giua_ca', string="Nghỉ giữa ca", store=True)
+    gio_bat_dau_nghi_giua_ca = fields.Selection(related='ca_lam_id.gio_bat_dau_nghi_giua_ca', string="Giờ bắt đầu nghỉ giữa ca", store=True)
+    gio_ket_thuc_nghi_giua_ca = fields.Selection(related='ca_lam_id.gio_ket_thuc_nghi_giua_ca', string="Giờ kết thúc nghỉ giữa ca", store=True)
 
-    cham_vao = fields.Float(string="Chấm vào", widget="float_time")
-    cham_ra_giua_gio = fields.Char(string="Chấm ra giữa giờ")
-    cham_vao_giua_gio = fields.Char(string="Chấm vào giữa giờ")
-    cham_ra = fields.Float(string="Chấm ra", widget="float_time")
+    cham_vao_ca = fields.Datetime(string="Chấm vào")
+    cham_ra_giua_ca = fields.Datetime(string="Chấm ra giữa ca")
+    cham_vao_giua_ca = fields.Datetime(string="Chấm vào giữa ca")
+    cham_ra_ca = fields.Datetime(string="Chấm ra")
+    
+    trang_thai_vao_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào ca", store=True)
+    so_phut_di_muon_dau_ca = fields.Integer(string="Số phút đi muộn đầu giờ")
+    
+    trang_thai_ra_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra giữa ca", store=True)
+    so_phut_ve_som_giua_ca = fields.Integer(string="Số phút về sớm giữa ca")
+    
+    trang_thai_vao_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào giữa ca", store=True)
+    so_phut_di_muon_giua_ca = fields.Integer(string="Số phút đi muộn")
+    
+    trang_thai_ra_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra ca", store=True)
+    so_phut_ve_som_cuoi_ca = fields.Integer(string="Số phút về sớm")
+
+    trang_thai_cham_cong = fields.Selection([
+        ('Đúng giờ', "Đúng giờ"),
+        ('Đi muộn', "Đi muộn"),
+        ('Về sớm', "Về sớm"),
+        ('Đi muộn về sớm', "Đi muộn về sớm"),
+        ('Chưa chấm công đủ', "Chưa chấm công đủ"),
+        ('Nghỉ', "Nghỉ"),
+    ], string="Trạng thái chấm công", store=True)
 
     so_phut_di_muon = fields.Integer(string="Số phút đi muộn")
     so_phut_ve_som = fields.Integer(string="Số phút về sớm")
@@ -38,12 +59,10 @@ class ChamCongChiTiet(models.Model):
 
     trang_thai = fields.Selection(
         [
-            ('Chờ duyệt', "Chờ duyệt"),
-            ('Đã duyệt', "Đã duyệt"),
-            ('Đã từ chối', "Đã từ chối"),
-            ('Đã hủy', "Đã hủy")
+            ('Chưa chốt công', "Chưa chốt công"),
+            ('Đã chốt công', "Đã chốt công"),
         ],
-        string="Trạng thái", default="Chờ duyệt", required=True
+        string="Trạng thái", default="Chưa chốt công'", required=True
     )
     
     @api.depends('ngay_cham_cong')
@@ -96,12 +115,50 @@ class ChamCongChiTiet(models.Model):
     def _check_ca_lam(self):
         for record in self:
             if record.ngay_cham_cong and not record.ca_lam_id:
-                raise ValidationError(f"Nhân viên không làm việc vào ngày {record.ngay_cham_cong.strftime('%d/%m/%Y')}. Vui lòng kiểm tra lại!")
+                raise ValidationError(f"Nhân viên không làm việc vào ngày {record.ngay_cham_cong.strftime('%d/%m/%Y')}")
     
-    @api.constrains('cham_vao', 'cham_ra')
-    def _check_valid_time(self):
+    @api.constrains('cham_vao_ca', 'cham_ra_giua_ca', 'cham_vao_giua_ca', 'cham_ra_ca', 'ngay_cham_cong')
+    def _check_cham_cong_ngay(self):
         for record in self:
-            if not (0 <= record.cham_vao < 24):
-                raise ValidationError("Thời gian chấm vào phải trong khoảng 00:00 - 23:59!")
-            if not (0 <= record.cham_ra < 24):
-                raise ValidationError("Thời gian chấm ra phải trong khoảng 00:00 - 23:59!")
+            if not record.ngay_cham_cong:
+                continue
+            
+            for field_name in ['cham_vao_ca', 'cham_ra_giua_ca', 'cham_vao_giua_ca', 'cham_ra_ca']:
+                ngay = getattr(record, field_name)
+                if ngay and ngay.date() != record.ngay_cham_cong:
+                    raise ValidationError(f"Thời gian chấm công không thuộc ngày {record.ngay_cham_cong.strftime('%d/%m/%Y')}")
+
+    @api.onchange('ngay_cham_cong')
+    def _onchange_ngay_cham_cong(self):
+        self.cham_vao_ca = False
+        self.cham_ra_giua_ca = False
+        self.cham_vao_giua_ca = False
+        self.cham_ra_ca = False
+
+    @api.constrains('cham_vao_ca', 'cham_ra_giua_ca', 'cham_vao_giua_ca', 'cham_ra_ca', 'nghi_giua_ca')
+    def _check_thoi_gian_cham_cong(self):
+        for record in self:
+            cham_vao_ca = record.cham_vao_ca
+            cham_ra_giua_ca = record.cham_ra_giua_ca
+            cham_vao_giua_ca = record.cham_vao_giua_ca
+            cham_ra_ca = record.cham_ra_ca
+            nghi_giua_ca = record.nghi_giua_ca
+
+            if not cham_vao_ca or not cham_ra_ca:
+                continue
+            
+            if cham_vao_ca and cham_ra_ca and cham_vao_ca >= cham_ra_ca:
+                raise ValidationError("Giờ vào ca phải trước giờ ra ca!")
+
+            if nghi_giua_ca:
+                if not cham_ra_giua_ca or not cham_vao_giua_ca:
+                    continue
+
+                if cham_ra_giua_ca <= cham_vao_ca or cham_ra_giua_ca >= cham_ra_ca:
+                    raise ValidationError("Giờ ra ca giữa ca phải sau giờ vào ca và trước giờ ra ca!")
+
+                if cham_vao_giua_ca <= cham_vao_ca or cham_vao_giua_ca >= cham_ra_ca:
+                    raise ValidationError("Giờ vào ca giữa ca phải sau giờ vào ca và trước giờ ra ca!")
+
+                if cham_vao_giua_ca <= cham_ra_giua_ca:
+                    raise ValidationError("Giờ vào ca giữa ca phải sau giờ ra ca giữa ca!")
