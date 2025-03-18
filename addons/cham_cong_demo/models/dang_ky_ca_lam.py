@@ -1,6 +1,5 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import timedelta
 
 class DangKyCaLam(models.Model):
     _name = 'dang_ky_ca_lam'

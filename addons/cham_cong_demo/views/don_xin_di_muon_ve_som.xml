@@ -27,8 +27,6 @@
                             <field name="so_phut_xin_ve_som_cuoi_ca"/>
                             <field name="tong_thoi_gian_xin"/>
                             <field name="ly_do"/>
-                            <field name="su_dung_phep"/>
-                            <field name="so_ngay_phep_bi_tru" attrs="{'invisible': [('su_dung_phep', '=', False)]}"/>
                             <field name="giay_to" filename="giay_to_filename"/>
                             <field name="trang_thai" readonly="1"/>
                         </group>
@@ -52,8 +50,6 @@
                     <field name="so_phut_xin_ve_som_cuoi_ca"/>
                     <field name="tong_thoi_gian_xin"/>
                     <field name="ly_do"/>
-                    <field name="su_dung_phep"/>
-                    <field name="so_ngay_phep_bi_tru"/>
                     <field name="giay_to_filename"/>
                     <field name="trang_thai" widget="badge"
                         decoration-info="trang_thai == 'Chờ duyệt'"

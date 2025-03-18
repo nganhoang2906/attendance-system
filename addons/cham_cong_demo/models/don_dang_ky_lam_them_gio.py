@@ -17,7 +17,7 @@ class DonDangKyLamThemGio(models.Model):
     ngay_ap_dung = fields.Date("Ngày áp dụng", required=True)
     loai_ngay = fields.Selection(
         [
-            ('Ngày làm việc', 'Ngày làm việc'),
+            ('Ngày thường', 'Ngày thường'),
             ('Ngày nghỉ', 'Ngày nghỉ'),
             ('Ngày lễ', 'Ngày lễ')
         ],
@@ -95,39 +95,56 @@ class DonDangKyLamThemGio(models.Model):
             elif record.ngay_ap_dung.weekday() == 6:
                 record.loai_ngay = 'Ngày nghỉ'
             else:
-                record.loai_ngay = 'Ngày làm việc'
+                record.loai_ngay = 'Ngày thường'
 
     @api.depends('nhan_vien_id', 'ngay_ap_dung', 'loai_ngay')
     def _compute_ca_lam(self):
         for record in self:
-            if record.loai_ngay == 'Ngày làm việc':
+            if not record.nhan_vien_id or not record.ngay_ap_dung:
+                record.ca_lam_id = False
+                continue
+
+            if record.loai_ngay == 'Ngày thường':
                 dang_ky_ca_lam = self.env['dang_ky_ca_lam'].search([
                     ('nhan_vien_id', '=', record.nhan_vien_id.id),
                     ('ngay_dang_ky', '=', record.ngay_ap_dung),
                     ('trang_thai', '=', 'Đã duyệt')
                 ], limit=1)
+                record.ca_lam_id = dang_ky_ca_lam.ca_lam_id.id if dang_ky_ca_lam else False
 
-                record.ca_lam_id = dang_ky_ca_lam.ca_lam_id if dang_ky_ca_lam else False
-            else:
+            elif not record.ca_lam_id:
                 record.ca_lam_id = False
 
+                
     @api.onchange('ngay_ap_dung')
     def _onchange_ngay_ap_dung(self):
         for record in self:
             record._compute_loai_ngay()
             record._compute_ca_lam()
+            record._compute_tong_thoi_gian_lam_them()
+    
+    @api.onchange('loai_ngay')
+    def _onchange_loai_ngay(self):
+        for record in self:
+            record._compute_ca_lam()
+            record._compute_tong_thoi_gian_lam_them()
 
-    @api.onchange('loai_ngay', 'ca_lam_id')
+    @api.onchange('ca_lam_id')
+    def _onchange_ca_lam_id(self):
+        for record in self:
+            record._compute_tong_thoi_gian_lam_them()
+
+    @api.constrains('loai_ngay', 'ca_lam_id')
     def _check_dang_ky_ca_lam(self):
         for record in self:
-            if record.loai_ngay == 'Ngày làm việc' and not record.ca_lam_id:
+            if record.loai_ngay == 'Ngày thường' and not record.ca_lam_id:
                 raise ValidationError("Nhân viên chưa đăng ký ca làm!")
-    
+        
     @api.constrains('loai_ngay', 'thoi_diem_lam_them')
     def _check_thoi_diem_lam_them(self):
         for record in self:
-            if record.loai_ngay == 'Ngày làm việc' and record.thoi_diem_lam_them not in ['Trước ca', 'Sau ca']:
-                raise ValidationError("Nếu là 'Ngày làm việc', chỉ được chọn 'Trước ca' hoặc 'Sau ca' cho thời điểm làm thêm!")
+            if record.loai_ngay == 'Ngày thường' and record.thoi_diem_lam_them not in ['Trước ca', 'Sau ca']:
+                raise ValidationError("Nếu là 'Ngày thường', chỉ được chọn 'Trước ca' hoặc 'Sau ca' cho thời điểm làm thêm!")
             
             if record.loai_ngay == 'Ngày nghỉ' and record.thoi_diem_lam_them != 'Ngày nghỉ':
                 raise ValidationError("Nếu là 'Ngày nghỉ', chỉ được chọn 'Ngày nghỉ' cho thời điểm làm thêm!")
@@ -150,24 +167,32 @@ class DonDangKyLamThemGio(models.Model):
 
                 if not (record.lam_ngoai_ca_den == gio_vao or record.lam_ngoai_ca_tu == gio_ra):
                     raise ValidationError("Thời gian làm thêm phải ngay trước hoặc ngay sau ca làm!")
-        
+    
     @api.depends('thoi_diem_lam_them', 'lam_ngoai_ca_tu', 'lam_ngoai_ca_den', 'ca_lam_id', 'loai_ngay')
     def _compute_tong_thoi_gian_lam_them(self):
         for record in self:
-            if not record.lam_ngoai_ca_tu or not record.lam_ngoai_ca_den:
-                record.tong_thoi_gian_lam_them = 0
-                continue
-
-            if record.lam_ngoai_ca_den > record.lam_ngoai_ca_tu:
-                thoi_gian_lam_them = record.lam_ngoai_ca_den - record.lam_ngoai_ca_tu
-            else:
-                thoi_gian_lam_them = 0
-
-                if record.loai_ngay in ['Ngày nghỉ', 'Ngày lễ'] and record.ca_lam_id:
+            if record.thoi_diem_lam_them == 'Sau ca' and record.ca_lam_id:
+                record.lam_ngoai_ca_tu = record.ca_lam_id.gio_ra
+            
+            elif record.thoi_diem_lam_them == 'Trước ca' and record.ca_lam_id:
+                record.lam_ngoai_ca_den = record.ca_lam_id.gio_vao
+            
+            if record.lam_ngoai_ca_tu and record.lam_ngoai_ca_den:
+                gio_bd = int(record.lam_ngoai_ca_tu[:2]) + int(record.lam_ngoai_ca_tu[3:]) / 60
+                gio_kt = int(record.lam_ngoai_ca_den[:2]) + int(record.lam_ngoai_ca_den[3:]) / 60
+                
+                if gio_kt > gio_bd:
+                    thoi_gian_lam_them = gio_kt - gio_bd
+                else:
+                    thoi_gian_lam_them = 0
+                
+                if record.loai_ngay == 'Ngày thường' and record.ca_lam_id:
+                    record.tong_thoi_gian_lam_them = thoi_gian_lam_them
+                
+                elif record.loai_ngay in ['Ngày nghỉ', 'Ngày lễ'] and record.ca_lam_id:
                     thoi_gian_lam_them += record.ca_lam_id.tong_thoi_gian
-
-            record.tong_thoi_gian_lam_them = thoi_gian_lam_them
-    
+                    record.tong_thoi_gian_lam_them = thoi_gian_lam_them
+                
     @api.constrains('tong_thoi_gian_lam_them', 'ca_lam_id', 'loai_ngay')
     def _check_tong_thoi_gian_lam_them(self):
         for record in self:
