@@ -15,7 +15,7 @@ class ChamCongChiTiet(models.Model):
             ('Ngày nghỉ', "Ngày nghỉ"),
             ('Ngày lễ', "Ngày lễ"),
         ],
-        string="Trạng thái", compute="_compute_ngay_lam_viec", store=True
+        string="Ngày làm việc", compute="_compute_ngay_lam_viec", store=True
     )
     ca_lam_id = fields.Many2one('ca_lam', string="Ca làm", compute="_compute_ca_lam_id", store=True)
 
@@ -31,16 +31,16 @@ class ChamCongChiTiet(models.Model):
     cham_ra_ca = fields.Datetime(string="Chấm ra")
     
     trang_thai_vao_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào ca", store=True)
-    so_phut_di_muon_dau_ca = fields.Integer(string="Số phút đi muộn đầu giờ")
+    so_phut_di_muon_dau_ca = fields.Integer(string="Số phút đi muộn đầu ca")
     
     trang_thai_ra_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra giữa ca", store=True)
     so_phut_ve_som_giua_ca = fields.Integer(string="Số phút về sớm giữa ca")
     
     trang_thai_vao_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào giữa ca", store=True)
-    so_phut_di_muon_giua_ca = fields.Integer(string="Số phút đi muộn")
+    so_phut_di_muon_giua_ca = fields.Integer(string="Số phút đi muộn giữa ca")
     
     trang_thai_ra_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra ca", store=True)
-    so_phut_ve_som_cuoi_ca = fields.Integer(string="Số phút về sớm")
+    so_phut_ve_som_cuoi_ca = fields.Integer(string="Số phút về sớm cuối ca")
 
     trang_thai_cham_cong = fields.Selection([
         ('Đúng giờ', "Đúng giờ"),
@@ -62,7 +62,7 @@ class ChamCongChiTiet(models.Model):
             ('Chưa chốt công', "Chưa chốt công"),
             ('Đã chốt công', "Đã chốt công"),
         ],
-        string="Trạng thái", default="Chưa chốt công'", required=True
+        string="Trạng thái", default="Chưa chốt công", required=True
     )
     
     @api.depends('ngay_cham_cong')
