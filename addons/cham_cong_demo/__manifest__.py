@@ -37,6 +37,7 @@
         'views/don_xin_di_muon_ve_som.xml',
         'views/don_dang_ky_lam_them_gio.xml',
         'views/cham_cong_chi_tiet.xml',
+        'views/tong_hop_cham_cong.xml',
         'views/menu.xml',
     ],
     # only loaded in demonstration mode

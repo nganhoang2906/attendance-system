@@ -89,5 +89,12 @@
             sequence="3"
             action="action_don_dang_ky_lam_them_gio"
         />
+
+        <menuitem name="Báo cáo thống kê" 
+            id="menu_bao_cao_thong_ke" 
+            parent="menu_root" 
+            sequence="5"
+            action="action_tong_hop_cham_cong"
+        />
     </data>
 </odoo>

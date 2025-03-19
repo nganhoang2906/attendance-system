@@ -8,3 +8,4 @@ access_don_xin_nghi,don_xin_nghi.don_xin_nghi,model_don_xin_nghi,base.group_user
 access_don_xin_di_muon_ve_som,don_xin_di_muon_ve_som.don_xin_di_muon_ve_som,model_don_xin_di_muon_ve_som,base.group_user,1,1,1,1
 access_don_dang_ky_lam_them_gio,don_dang_ky_lam_them_gio.don_dang_ky_lam_them_gio,model_don_dang_ky_lam_them_gio,base.group_user,1,1,1,1
 access_cham_cong_chi_tiet,cham_cong_chi_tiet.cham_cong_chi_tiet,model_cham_cong_chi_tiet,base.group_user,1,1,1,1
+access_tong_hop_cham_cong,tong_hop_cham_cong.tong_hop_cham_cong,model_tong_hop_cham_cong,base.group_user,1,1,1,1

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_tong_hop_cham_cong_form" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong</field>
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Tổng hợp chấm công</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="nhan_vien_id"/>
+                            <field name="phong_ban_id"/>
+                            <field name="nam"/>
+                            <field name="thang"/>
+                            <field name="so_lan_di_muon"/>
+                            <field name="so_lan_ve_som"/>
+                            <field name="so_lan_xin_nghi"/>
+                            <field name="so_lan_nghi_khong_phep"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_tong_hop_cham_cong_tree" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong</field>
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="nhan_vien_id"/>
+                    <field name="phong_ban_id"/>
+                    <field name="nam"/>
+                    <field name="thang"/>
+                    <field name="so_lan_di_muon"/>
+                    <field name="so_lan_ve_som"/>
+                    <field name="so_lan_xin_nghi"/>
+                    <field name="so_lan_nghi_khong_phep"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="tong_hop_cham_cong_search">
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="nhan_vien_id"/>
+                    <field name="phong_ban_id"/>
+                    <field name="nam"/>
+                    <field name="thang"/>
+                    <field name="so_lan_di_muon"/>
+                    <field name="so_lan_ve_som"/>
+                    <field name="so_lan_xin_nghi"/>
+                    <field name="so_lan_nghi_khong_phep"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_tong_hop_cham_cong_pivot" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong_pivot</field>
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <pivot string="Tổng hợp chấm công">
+                    <field name="nam" type="col"/>
+                    <field name="thang" type="col"/>
+                    <field name="phong_ban_id" type="row"/>
+                    <field name="nhan_vien_id" type="row"/>
+                    <field name="so_lan_di_muon" type="measure"/>
+                    <field name="so_lan_ve_som" type="measure"/>
+                    <field name="so_lan_xin_nghi" type="measure"/>
+                    <field name="so_lan_nghi_khong_phep" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_tong_hop_cham_cong_graph" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong_graph</field>
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <graph string="Biểu đồ tổng hợp chấm công" type="bar" stacked="False">
+                    <field name="thang" type="row"/>
+                    <field name="phong_ban_id" type="col"/>
+                    <field name="so_lan_di_muon" type="measure"/>
+                    <field name="so_lan_ve_som" type="measure"/>
+                    <field name="so_lan_xin_nghi" type="measure"/>
+                    <field name="so_lan_nghi_khong_phep" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="action_tong_hop_cham_cong" model="ir.actions.act_window">
+            <field name="name">Tổng hợp chấm công</field>
+            <field name="res_model">tong_hop_cham_cong</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="search_view_id" ref = "tong_hop_cham_cong_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    
