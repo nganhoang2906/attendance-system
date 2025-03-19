@@ -64,6 +64,24 @@ class DonDangKyLamThemGio(models.Model):
         for record in self:
             record._compute_tong_thoi_gian_lam_them()
     
+    @api.onchange('ngay_ap_dung')
+    def _onchange_ngay_ap_dung(self):
+        for record in self:
+            record._compute_loai_ngay()
+            record._compute_ca_lam()
+            record._compute_tong_thoi_gian_lam_them()
+    
+    @api.onchange('loai_ngay')
+    def _onchange_loai_ngay(self):
+        for record in self:
+            record._compute_ca_lam()
+            record._compute_tong_thoi_gian_lam_them()
+
+    @api.onchange('ca_lam_id')
+    def _onchange_ca_lam_id(self):
+        for record in self:
+            record._compute_tong_thoi_gian_lam_them()
+    
     @api.constrains('ngay_lam_don', 'ngay_ap_dung')
     def _check_ngay_lam_don(self):
         for record in self:
