@@ -57,6 +57,10 @@ class ChamCongChiTiet(models.Model):
     tong_gio_lam = fields.Float(string="Tổng giờ làm")
     so_gio_cong = fields.Float(string="Số giờ công")
 
+    don_xin_nghi_id = fields.Many2one('don_xin_nghi', string="Đơn xin nghỉ", compute="_compute_don_xin_nghi_id", store=True)
+    don_xin_di_muon_ve_som_id = fields.Many2one('don_xin_di_muon_ve_som', string="Đơn xin đi muộn về sớm", compute="_compute_don_xin_di_muon_ve_som_id", store=True)
+    don_dang_ky_lam_them_gio_id = fields.Many2one('don_dang_ky_lam_them_gio', string="Đơn đăng ký làm thêm giờ", compute="_compute_don_dang_ky_lam_them_gio_id", store=True)
+    
     trang_thai = fields.Selection(
         [
             ('Chưa chốt công', "Chưa chốt công"),
@@ -162,3 +166,35 @@ class ChamCongChiTiet(models.Model):
 
                 if cham_vao_giua_ca <= cham_ra_giua_ca:
                     raise ValidationError("Giờ vào ca giữa ca phải sau giờ ra ca giữa ca!")
+
+    @api.depends('nhan_vien_id', 'ngay_cham_cong')
+    def _compute_don_xin_nghi_id(self):
+        for record in self:
+            don_xin_nghi = self.env['don_xin_nghi'].search([
+                ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                ('trang_thai', '=', 'Đã duyệt'),
+                ('ngay_bat_dau_nghi', '<=', record.ngay_cham_cong),
+                ('ngay_ket_thuc_nghi', '>=', record.ngay_cham_cong),
+            ], limit=1)
+            
+            record.don_xin_nghi_id = don_xin_nghi.id if don_xin_nghi else False
+            
+    @api.depends('nhan_vien_id', 'ngay_cham_cong')
+    def _compute_don_xin_di_muon_ve_som_id(self):
+        for record in self:
+            don_xin_di_muon_ve_som = self.env['don_xin_di_muon_ve_som'].search([
+                ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                ('trang_thai', '=', 'Đã duyệt'),
+                ('ngay_ap_dung', '=', record.ngay_cham_cong),
+            ], limit=1)
+            record.don_xin_di_muon_ve_som_id = don_xin_di_muon_ve_som.id if don_xin_di_muon_ve_som else False
+
+    @api.depends('nhan_vien_id', 'ngay_cham_cong')
+    def _compute_don_dang_ky_lam_them_gio_id(self):
+        for record in self:
+            don_dang_ky_lam_them_gio = self.env['don_dang_ky_lam_them_gio'].search([
+                ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                ('trang_thai', '=', 'Đã duyệt'),
+                ('ngay_ap_dung', '=', record.ngay_cham_cong),
+            ], limit=1)
+            record.don_dang_ky_lam_them_gio_id = don_dang_ky_lam_them_gio.id if don_dang_ky_lam_them_gio else False

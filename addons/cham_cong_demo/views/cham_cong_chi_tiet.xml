@@ -14,12 +14,6 @@
                             <field name="ngay_lam_viec"/>
                             <field name="ca_lam_id"/>
                             <field name="nghi_giua_ca"/>
-                            <field name="trang_thai_cham_cong"/>
-                            <field name="so_phut_di_muon"/>
-                            <field name="so_phut_ve_som"/>
-                            <field name="so_gio_lam_them"/>
-                            <field name="tong_gio_lam"/>
-                            <field name="so_gio_cong"/>
                             <field name="trang_thai"/>
                         </group>
 
@@ -43,6 +37,21 @@
                             <field name="cham_ra_ca"/>
                             <field name="trang_thai_ra_ca"/>
                             <field name="so_phut_ve_som_cuoi_ca"/>
+                        </group>
+
+                        <group col="6" string="Đơn từ">
+                            <field name="don_xin_nghi_id"/>
+                            <field name="don_xin_di_muon_ve_som_id"/>
+                            <field name="don_dang_ky_lam_them_gio_id"/>
+                        </group>
+
+                        <group col="4" string="Kết quả chấm công">
+                            <field name="so_phut_di_muon"/>
+                            <field name="so_phut_ve_som"/>
+                            <field name="so_gio_lam_them"/>
+                            <field name="tong_gio_lam"/>
+                            <field name="so_gio_cong"/>
+                            <field name="trang_thai_cham_cong"/>
                         </group>
                     </sheet>
                 </form>

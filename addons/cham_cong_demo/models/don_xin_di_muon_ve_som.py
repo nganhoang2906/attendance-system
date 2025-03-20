@@ -13,6 +13,7 @@ class DonXinDiMuonVeSom(models.Model):
     ngay_lam_don = fields.Date("Ngày làm đơn", required=True, default=fields.Date.today)
     ngay_ap_dung = fields.Date("Ngày áp dụng", required=True, default=fields.Date.today)
     ca_lam_id = fields.Many2one('ca_lam', string="Ca làm", readonly=True, compute="_compute_ca_lam", store=True)
+    nghi_giua_gio = 
     so_phut_xin_di_muon_dau_ca = fields.Integer("Đi muộn đầu ca (phút)", default=0)
     so_phut_xin_ve_som_giua_ca = fields.Integer("Về sớm giữa ca (phút)", default=0)
     so_phut_xin_di_muon_giua_ca = fields.Integer("Đi muộn giữa ca (phút)", default=0)

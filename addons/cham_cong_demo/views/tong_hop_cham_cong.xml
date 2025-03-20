@@ -13,10 +13,10 @@
                             <field name="phong_ban_id"/>
                             <field name="nam"/>
                             <field name="thang"/>
+                            <field name="ngay"/>
                             <field name="so_lan_di_muon"/>
                             <field name="so_lan_ve_som"/>
-                            <field name="so_lan_xin_nghi"/>
-                            <field name="so_lan_nghi_khong_phep"/>
+                            <field name="so_lan_nghi"/>
                         </group>
                     </sheet>
                 </form>
@@ -32,10 +32,10 @@
                     <field name="phong_ban_id"/>
                     <field name="nam"/>
                     <field name="thang"/>
+                    <field name="ngay"/>
                     <field name="so_lan_di_muon"/>
                     <field name="so_lan_ve_som"/>
-                    <field name="so_lan_xin_nghi"/>
-                    <field name="so_lan_nghi_khong_phep"/>
+                    <field name="so_lan_nghi"/>
                 </tree>
             </field>
         </record>
@@ -48,10 +48,16 @@
                     <field name="phong_ban_id"/>
                     <field name="nam"/>
                     <field name="thang"/>
+                    <field name="ngay"/>
                     <field name="so_lan_di_muon"/>
                     <field name="so_lan_ve_som"/>
-                    <field name="so_lan_xin_nghi"/>
-                    <field name="so_lan_nghi_khong_phep"/>
+                    <field name="so_lan_nghi"/>
+
+                    <group expand="0" string="Lọc theo thời gian">
+                        <filter name="filter_5_nam" string="5 năm gần đây" domain="[('nam', '>=', (context_today().year - 4))]"/>
+                        <filter name="filter_12_thang" string="12 tháng gần đây" domain="[('nam', '=', context_today().year), ('thang', '>=', (context_today().month - 11))]"/>
+                        <filter name="filter_1_thang" string="1 tháng gần đây" domain="[('nam', '=', context_today().year), ('thang', '=', context_today().month)]"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -63,12 +69,12 @@
                 <pivot string="Tổng hợp chấm công">
                     <field name="nam" type="col"/>
                     <field name="thang" type="col"/>
+                    <field name="ngay" type="col"/>
                     <field name="phong_ban_id" type="row"/>
                     <field name="nhan_vien_id" type="row"/>
                     <field name="so_lan_di_muon" type="measure"/>
                     <field name="so_lan_ve_som" type="measure"/>
-                    <field name="so_lan_xin_nghi" type="measure"/>
-                    <field name="so_lan_nghi_khong_phep" type="measure"/>
+                    <field name="so_lan_nghi" type="measure"/>
                 </pivot>
             </field>
         </record>
@@ -82,11 +88,11 @@
                     <field name="phong_ban_id" type="col"/>
                     <field name="so_lan_di_muon" type="measure"/>
                     <field name="so_lan_ve_som" type="measure"/>
-                    <field name="so_lan_xin_nghi" type="measure"/>
-                    <field name="so_lan_nghi_khong_phep" type="measure"/>
+                    <field name="so_lan_nghi" type="measure"/>
                 </graph>
             </field>
         </record>
+
 
         <record id="action_tong_hop_cham_cong" model="ir.actions.act_window">
             <field name="name">Tổng hợp chấm công</field>
