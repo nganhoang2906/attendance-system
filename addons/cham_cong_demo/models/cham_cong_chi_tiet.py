@@ -1,5 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from datetime import datetime, timedelta
+from pytz import timezone, UTC
 
 class ChamCongChiTiet(models.Model):
     _name = 'cham_cong_chi_tiet'
@@ -30,18 +32,16 @@ class ChamCongChiTiet(models.Model):
     cham_vao_giua_ca = fields.Datetime(string="Chấm vào giữa ca")
     cham_ra_ca = fields.Datetime(string="Chấm ra")
     
-    trang_thai_vao_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào ca", store=True)
-    so_phut_di_muon_dau_ca = fields.Integer(string="Số phút đi muộn đầu ca")
+    so_phut_di_muon_dau_ca = fields.Integer(string="Số phút đi muộn đầu ca", compute="_compute_vao_ca", store=True)
+    so_phut_ve_som_giua_ca = fields.Integer(string="Số phút về sớm giữa ca", compute="_compute_ra_giua_ca", store=True)
+    so_phut_di_muon_giua_ca = fields.Integer(string="Số phút đi muộn giữa ca", compute="_compute_vao_giua_ca", store=True)
+    so_phut_ve_som_cuoi_ca = fields.Integer(string="Số phút về sớm cuối ca", compute="_compute_ra_ca", store=True)
     
-    trang_thai_ra_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra giữa ca", store=True)
-    so_phut_ve_som_giua_ca = fields.Integer(string="Số phút về sớm giữa ca")
+    trang_thai_vao_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào ca", compute="_compute_vao_ca", store=True)
+    trang_thai_ra_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra giữa ca", compute="_compute_ra_giua_ca", store=True)
+    trang_thai_vao_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào giữa ca", compute="_compute_vao_giua_ca", store=True)
+    trang_thai_ra_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra ca", compute="_compute_ra_ca", store=True)
     
-    trang_thai_vao_giua_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Đi muộn', "Đi muộn"), ('Chưa chấm vào', "Chưa chấm vào")], string="Trạng thái vào giữa ca", store=True)
-    so_phut_di_muon_giua_ca = fields.Integer(string="Số phút đi muộn giữa ca")
-    
-    trang_thai_ra_ca = fields.Selection([('Đúng giờ', "Đúng giờ"), ('Về sớm', "Về sớm"), ('Chưa chấm ra', "Chưa chấm ra")], string="Trạng thái ra ca", store=True)
-    so_phut_ve_som_cuoi_ca = fields.Integer(string="Số phút về sớm cuối ca")
-
     trang_thai_cham_cong = fields.Selection([
         ('Đúng giờ', "Đúng giờ"),
         ('Đi muộn', "Đi muộn"),
@@ -198,3 +198,103 @@ class ChamCongChiTiet(models.Model):
                 ('ngay_ap_dung', '=', record.ngay_cham_cong),
             ], limit=1)
             record.don_dang_ky_lam_them_gio_id = don_dang_ky_lam_them_gio.id if don_dang_ky_lam_them_gio else False
+    
+    def _convert_time_to_datetime(self, ngay, gio_str):
+        user_tz = self.env.user.tz or 'UTC'
+        tz = timezone(user_tz)
+        if not ngay or not gio_str:
+            return None
+        h, m, s = map(int, gio_str.split(':'))
+        dt = datetime.combine(ngay, datetime.min.time()) + timedelta(hours=h, minutes=m, seconds=s)
+        return tz.localize(dt).astimezone(UTC).replace(tzinfo=None)
+    
+    @api.depends('cham_vao_ca', 'ca_lam_id.gio_vao_ca')
+    def _compute_vao_ca(self):
+        for record in self:
+            if not record.ca_lam_id:
+                record.trang_thai_vao_ca = "Chưa chấm vào"
+                record.so_phut_di_muon_dau_ca = 0
+                continue
+            
+            ngay = record.ngay_cham_cong
+            gio_vao_ca = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_vao_ca)
+            if not record.cham_vao_ca:
+                record.trang_thai_vao_ca = "Chưa chấm vào"
+                record.so_phut_di_muon_dau_ca = 0
+            else:
+                so_phut_di_muon = max(0, int((record.cham_vao_ca - gio_vao_ca).total_seconds() // 60))
+                record.trang_thai_vao_ca = "Đi muộn" if so_phut_di_muon > 0 else "Đúng giờ"
+                record.so_phut_di_muon_dau_ca = so_phut_di_muon
+
+    @api.depends('cham_ra_giua_ca', 'ca_lam_id.gio_bat_dau_nghi_giua_ca')
+    def _compute_ra_giua_ca(self):
+        for record in self:
+            if not record.ca_lam_id:
+                record.trang_thai_ra_giua_ca = "Chưa chấm ra"
+                record.so_phut_ve_som_giua_ca = 0
+                continue
+            
+            ngay = record.ngay_cham_cong
+            gio_bat_dau_nghi = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_bat_dau_nghi_giua_ca)
+
+            if not record.cham_ra_giua_ca:
+                record.trang_thai_ra_giua_ca = "Chưa chấm ra"
+                record.so_phut_ve_som_giua_ca = 0
+            else:
+                so_phut_ve_som = max(0, int((gio_bat_dau_nghi - record.cham_ra_giua_ca).total_seconds() // 60))
+                record.trang_thai_ra_giua_ca = "Về sớm" if so_phut_ve_som > 0 else "Đúng giờ"
+                record.so_phut_ve_som_giua_ca = so_phut_ve_som
+
+    @api.depends('cham_vao_giua_ca', 'ca_lam_id.gio_ket_thuc_nghi_giua_ca')
+    def _compute_vao_giua_ca(self):
+        for record in self:
+            if not record.ca_lam_id:
+                record.trang_thai_vao_giua_ca = "Chưa chấm vào"
+                record.so_phut_di_muon_giua_ca = 0
+                continue
+
+            ngay = record.ngay_cham_cong
+            gio_ket_thuc_nghi = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_ket_thuc_nghi_giua_ca)
+
+            if not record.cham_vao_giua_ca:
+                record.trang_thai_vao_giua_ca = "Chưa chấm vào"
+                record.so_phut_di_muon_giua_ca = 0
+            else:
+                so_phut_di_muon = max(0, int((record.cham_vao_giua_ca - gio_ket_thuc_nghi).total_seconds() // 60))
+                record.trang_thai_vao_giua_ca = "Đi muộn" if so_phut_di_muon > 0 else "Đúng giờ"
+                record.so_phut_di_muon_giua_ca = so_phut_di_muon
+
+    @api.depends('cham_ra_ca', 'ca_lam_id.gio_ra_ca')
+    def _compute_ra_ca(self):
+        for record in self:
+            if not record.ca_lam_id:
+                record.trang_thai_ra_ca = "Chưa chấm ra"
+                record.so_phut_ve_som_cuoi_ca = 0
+                continue
+
+            ngay = record.ngay_cham_cong
+            gio_ra_ca = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_ra_ca)
+
+            if not record.cham_ra_ca:
+                record.trang_thai_ra_ca = "Chưa chấm ra"
+                record.so_phut_ve_som_cuoi_ca = 0
+            else:
+                so_phut_ve_som = max(0, int((gio_ra_ca - record.cham_ra_ca).total_seconds() // 60))
+                record.trang_thai_ra_ca = "Về sớm" if so_phut_ve_som > 0 else "Đúng giờ"
+                record.so_phut_ve_som_cuoi_ca = so_phut_ve_som
+
+    @api.onchange('cham_vao_ca')
+    def _onchange_cham_vao_ca(self):
+        self._compute_vao_ca()
+
+    @api.onchange('cham_ra_giua_ca')
+    def _onchange_cham_ra_giua_ca(self):
+        self._compute_ra_giua_ca()
+
+    @api.onchange('cham_vao_giua_ca')
+    def _onchange_cham_vao_giua_ca(self):
+        self._compute_vao_giua_ca()
+
+    @api.onchange('cham_ra_ca')
+    def _onchange_cham_ra_ca(self):
+        self._compute_ra_ca()

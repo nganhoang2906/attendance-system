@@ -13,7 +13,7 @@ class DonXinDiMuonVeSom(models.Model):
     ngay_lam_don = fields.Date("Ngày làm đơn", required=True, default=fields.Date.today)
     ngay_ap_dung = fields.Date("Ngày áp dụng", required=True, default=fields.Date.today)
     ca_lam_id = fields.Many2one('ca_lam', string="Ca làm", readonly=True, compute="_compute_ca_lam", store=True)
-    nghi_giua_gio = 
+    nghi_giua_ca = fields.Boolean(related='ca_lam_id.nghi_giua_ca', string="Nghỉ giữa ca", store=True)
     so_phut_xin_di_muon_dau_ca = fields.Integer("Đi muộn đầu ca (phút)", default=0)
     so_phut_xin_ve_som_giua_ca = fields.Integer("Về sớm giữa ca (phút)", default=0)
     so_phut_xin_di_muon_giua_ca = fields.Integer("Đi muộn giữa ca (phút)", default=0)
@@ -62,6 +62,14 @@ class DonXinDiMuonVeSom(models.Model):
             ])
             record.tong_thoi_gian_xin = math.ceil(tong_phut / 60 * 100) / 100
 
+    @api.onchange('ngay_ap_dung')
+    def _onchange_ngay_ap_dung(self):
+        for record in self:
+            record.so_phut_xin_di_muon_dau_ca = 0
+            record.so_phut_xin_ve_som_giua_ca = 0
+            record.so_phut_xin_di_muon_giua_ca = 0
+            record.so_phut_xin_ve_som_cuoi_ca = 0
+    
     @api.constrains('so_phut_xin_di_muon_dau_ca', 'so_phut_xin_ve_som_giua_ca', 'so_phut_xin_di_muon_giua_ca', 'so_phut_xin_ve_som_cuoi_ca', 'tong_thoi_gian_xin')
     def _check_so_phut_hop_le(self):
         for record in self:

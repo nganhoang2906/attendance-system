@@ -21,12 +21,13 @@
                             <field name="ngay_lam_don"/>
                             <field name="ngay_ap_dung"/>
                             <field name="ca_lam_id"/>
-                            <field name="so_phut_xin_di_muon_dau_ca"/>
-                            <field name="so_phut_xin_ve_som_giua_ca"/>
-                            <field name="so_phut_xin_di_muon_giua_ca"/>
-                            <field name="so_phut_xin_ve_som_cuoi_ca"/>
-                            <field name="tong_thoi_gian_xin"/>
+                            <field name="nghi_giua_ca"/>
                             <field name="ly_do"/>
+                            <field name="so_phut_xin_di_muon_dau_ca"/>
+                            <field name="so_phut_xin_ve_som_cuoi_ca"/>
+                            <field name="so_phut_xin_ve_som_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="so_phut_xin_di_muon_giua_ca" attrs="{'invisible': [('nghi_giua_ca', '=', False)]}"/>
+                            <field name="tong_thoi_gian_xin"/>
                             <field name="giay_to" filename="giay_to_filename"/>
                             <field name="trang_thai" readonly="1"/>
                         </group>
