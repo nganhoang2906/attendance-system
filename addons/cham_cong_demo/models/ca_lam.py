@@ -45,11 +45,15 @@ class CaLam(models.Model):
             else:
                 record.tong_thoi_gian = 0
     
-    @api.constrains('tong_thoi_gian')
+    @api.constrains('tong_thoi_gian', 'nghi_giua_ca')
     def _check_tong_thoi_gian(self):
         for record in self:
-            if record.tong_thoi_gian > 8 or record.tong_thoi_gian <= 0:
+            if record.tong_thoi_gian <= 0:
+                raise ValidationError("Chưa có thời gian làm việc!")
+            elif record.tong_thoi_gian > 8:
                 raise ValidationError("Thời gian làm việc không được quá 8 tiếng mỗi ngày!")
+            if record.tong_thoi_gian <= 4 and record.nghi_giua_ca:
+                raise ValidationError("Thời gian làm việc phải trên 4 tiếng mới được nghỉ giữa ca!")     
     
     @api.constrains('gio_vao_ca', 'gio_ra_ca', 'gio_bat_dau_nghi_giua_ca', 'gio_ket_thuc_nghi_giua_ca', 'nghi_giua_ca')
     def _check_gio_lam_viec(self):

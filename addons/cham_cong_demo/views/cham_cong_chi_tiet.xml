@@ -17,6 +17,12 @@
                             <field name="trang_thai"/>
                         </group>
 
+                        <group col="6" string="Đơn từ">
+                            <field name="don_xin_nghi_id"/>
+                            <field name="don_xin_di_muon_ve_som_id"/>
+                            <field name="don_dang_ky_lam_them_gio_id"/>
+                        </group>
+
                         <group col="4" string="Chi tiết chấm công">    
                             <field name="gio_vao_ca"/>
                             <field name="cham_vao_ca"/>
@@ -37,12 +43,6 @@
                             <field name="cham_ra_ca"/>
                             <field name="trang_thai_ra_ca"/>
                             <field name="so_phut_ve_som_cuoi_ca"/>
-                        </group>
-
-                        <group col="6" string="Đơn từ">
-                            <field name="don_xin_nghi_id"/>
-                            <field name="don_xin_di_muon_ve_som_id"/>
-                            <field name="don_dang_ky_lam_them_gio_id"/>
                         </group>
 
                         <group col="4" string="Kết quả chấm công">
@@ -107,9 +107,24 @@
                     <field name="nhan_vien_id"/>
                     <field name="ca_lam_id"/>
                     <field name="ngay_lam_viec"/>
+                    <field name="trang_thai_vao_ca"/>
+                    <field name="trang_thai_ra_giua_ca"/>
+                    <field name="trang_thai_vao_giua_ca"/>
+                    <field name="trang_thai_ra_ca"/>
                     <field name="trang_thai_cham_cong"/>
                     <field name="trang_thai"/>
                 </search>
+                <searchpanel>
+                    <field name="nhan_vien_id" select="multi"/>
+                    <field name="ca_lam_id" select="multi"/>
+                    <field name="ngay_lam_viec" select="multi"/>
+                    <field name="trang_thai_vao_ca" select="multi"/>
+                    <field name="trang_thai_ra_giua_ca" select="multi"/>
+                    <field name="trang_thai_vao_giua_ca" select="multi"/>
+                    <field name="trang_thai_ra_ca" select="multi"/>
+                    <field name="trang_thai_cham_cong" select="multi"/>
+                    <field name="trang_thai" select="multi"/>
+                </searchpanel>
             </field>
         </record>
 
