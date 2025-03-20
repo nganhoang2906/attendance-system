@@ -8,7 +8,10 @@ class ChamCongChiTiet(models.Model):
     _description = 'Chấm công chi tiết'
     _rec_name = 'nhan_vien_id'
     _order = 'ngay_cham_cong desc'
-
+    _sql_constraints = [
+        ('unique_cham_cong_chi_tiet', 'unique(nhan_vien_id, ngay_cham_cong)', 'Nhân viên này đã có chấm công chi tiết vào ngày này!'),
+    ]
+    
     nhan_vien_id = fields.Many2one('nhan_vien', string="Nhân viên", required=True)
     ngay_cham_cong = fields.Date(string="Ngày chấm công", required=True)
     ngay_lam_viec = fields.Selection(
@@ -272,6 +275,10 @@ class ChamCongChiTiet(models.Model):
                 record.trang_thai_ra_giua_ca = False
                 record.so_phut_ve_som_giua_ca = 0
                 continue
+            if record.nghi_giua_ca == False:
+                record.trang_thai_ra_giua_ca = False
+                record.so_phut_ve_som_giua_ca = 0
+                continue
 
             ngay = record.ngay_cham_cong
             gio_bat_dau_nghi_giua_ca = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_bat_dau_nghi_giua_ca)
@@ -318,7 +325,12 @@ class ChamCongChiTiet(models.Model):
                 record.trang_thai_vao_giua_ca = False
                 record.so_phut_di_muon_giua_ca = 0
                 continue
-
+            
+            if record.nghi_giua_ca == False:
+                record.trang_thai_ra_giua_ca = False
+                record.so_phut_ve_som_giua_ca = 0
+                continue
+            
             ngay = record.ngay_cham_cong
             gio_ket_thuc_nghi_giua_ca = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_ket_thuc_nghi_giua_ca)
 
@@ -498,8 +510,14 @@ class ChamCongChiTiet(models.Model):
                 record.trang_thai_cham_cong = "Nghỉ"
                 continue
 
-            if any(trang_thai == "Chưa chấm vào" for trang_thai in [record.trang_thai_vao_ca, record.trang_thai_vao_giua_ca]) or \
-            any(trang_thai == "Chưa chấm ra" for trang_thai in [record.trang_thai_ra_ca, record.trang_thai_ra_giua_ca]):
+            if "Chưa chấm vào" in [record.trang_thai_vao_ca] or "Chưa chấm ra" in [record.trang_thai_ra_ca]:
+                record.trang_thai_cham_cong = "Chưa chấm công đủ"
+                continue
+
+            if record.nghi_giua_ca and (
+                "Chưa chấm vào" in [record.trang_thai_vao_giua_ca] or 
+                "Chưa chấm ra" in [record.trang_thai_ra_giua_ca]
+            ):
                 record.trang_thai_cham_cong = "Chưa chấm công đủ"
                 continue
 
@@ -516,3 +534,14 @@ class ChamCongChiTiet(models.Model):
             record.trang_thai_cham_cong = trang_thai
 
                 
+    def action_chot_cong(self):
+        for record in self:
+            if record.trang_thai_cham_cong == "Chưa chấm công đủ":
+                raise ValidationError("Chưa chấm công đủ!")
+            if record.trang_thai == 'Chưa chốt công':
+                record.write({'trang_thai': 'Đã chốt công'})
+
+    def action_huy(self):
+        for record in self:
+            if record.trang_thai == 'Đã chốt công':
+                record.write({'trang_thai': 'Chưa chốt công'})

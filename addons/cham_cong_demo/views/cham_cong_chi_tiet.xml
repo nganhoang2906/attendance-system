@@ -6,6 +6,12 @@
             <field name="model">cham_cong_chi_tiet</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <button name="action_chot_cong" type="object" string="Chốt công" class="btn-primary"
+                            attrs="{'invisible': ('trang_thai', '!=', 'Chưa chốt công')}"/>
+                        <button name="action_huy" type="object" string="Hủy" class="btn-danger"
+                            attrs="{'invisible': ('trang_thai', '!=', 'Đã chốt công')}"/>
+                    </header>
                     <sheet>
                         <div class="oe_read_only" style="font-size:25px">Chấm công chi tiết</div>
                         <group col="4" string="Thông tin chung">
@@ -71,22 +77,42 @@
                     <field name="gio_vao_ca"/>
                     
                     <field name="cham_vao_ca"/>
-                    <field name="trang_thai_vao_ca"/>
+                    <field name="trang_thai_vao_ca" widget="badge"
+                        decoration-success="trang_thai_vao_ca == 'Đúng giờ'"
+                        decoration-warning="trang_thai_vao_ca == 'Đi muộn'"
+                        decoration-muted="trang_thai_vao_ca == 'Chưa chấm vào'"
+                        decoration-danger="trang_thai_vao_ca == 'Nghỉ buổi sáng' or trang_thai_vao_ca == 'Nghỉ'"
+                    />
                     <field name="so_phut_di_muon_dau_ca"/>
                     
                     <field name="gio_bat_dau_nghi_giua_ca"/>
                     <field name="cham_ra_giua_ca"/>
-                    <field name="trang_thai_ra_giua_ca"/>
+                    <field name="trang_thai_ra_giua_ca" widget="badge"
+                        decoration-success="trang_thai_ra_giua_ca == 'Đúng giờ'"
+                        decoration-warning="trang_thai_ra_giua_ca == 'Về sớm'"
+                        decoration-muted="trang_thai_ra_giua_ca == 'Chưa chấm ra'"
+                        decoration-danger="trang_thai_ra_giua_ca == 'Nghỉ buổi sáng' or trang_thai_vao_ca == 'Nghỉ'"
+                    />
                     <field name="so_phut_ve_som_giua_ca"/>
 
                     <field name="gio_ket_thuc_nghi_giua_ca"/>
                     <field name="cham_vao_giua_ca"/>
-                    <field name="trang_thai_vao_giua_ca"/>
+                    <field name="trang_thai_vao_giua_ca" widget="badge"
+                        decoration-success="trang_thai_vao_giua_ca == 'Đúng giờ'"
+                        decoration-warning="trang_thai_vao_giua_ca == 'Đi muộn'"
+                        decoration-muted="trang_thai_vao_giua_ca == 'Chưa chấm vào'"
+                        decoration-danger="trang_thai_vao_giua_ca == 'Nghỉ buổi chiều' or trang_thai_vao_ca == 'Nghỉ'"
+                    />
                     <field name="so_phut_di_muon_giua_ca"/>
 
                     <field name="gio_ra_ca"/>
                     <field name="cham_ra_ca"/>
-                    <field name="trang_thai_ra_ca"/>
+                    <field name="trang_thai_ra_ca" widget="badge"
+                        decoration-success="trang_thai_ra_ca == 'Đúng giờ'"
+                        decoration-warning="trang_thai_ra_ca == 'Về sớm'"
+                        decoration-muted="trang_thai_ra_ca == 'Chưa chấm ra'"
+                        decoration-danger="trang_thai_ra_ca == 'Nghỉ buổi chiều' or trang_thai_vao_ca == 'Nghỉ'"
+                    />
                     <field name="so_phut_ve_som_cuoi_ca"/>
                     
                     <field name="so_phut_di_muon"/>
@@ -94,8 +120,18 @@
                     <field name="so_gio_lam_them"/>
                     <field name="tong_gio_lam"/>
                     <field name="so_gio_cong"/>
-                    <field name="trang_thai_cham_cong"/>
+                    <field name="trang_thai_cham_cong" widget="badge"
+                        decoration-success="trang_thai_cham_cong == 'Đúng giờ'"
+                        decoration-warning="trang_thai_cham_cong in ['Đi muộn', 'Về sớm', 'Đi muộn về sớm']"
+                        decoration-muted="trang_thai_cham_cong == 'Chưa chấm công đủ'"
+                        decoration-danger="trang_thai_cham_cong == 'Nghỉ'"
+                    />
                     <field name="trang_thai"/>
+                    
+                    <button name="action_chot_cong" type="object" string="Chốt công" class="btn-primary"
+                        attrs="{'invisible': ('trang_thai', '!=', 'Chưa chốt công')}"/>
+                    <button name="action_huy" type="object" string="Hủy" class="btn-danger"
+                        attrs="{'invisible': ('trang_thai', '!=', 'Đã chốt công')}"/>
                 </tree>
             </field>
         </record>
