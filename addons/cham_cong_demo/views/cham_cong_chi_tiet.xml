@@ -20,7 +20,7 @@
                             <field name="ngay_lam_viec"/>
                             <field name="ca_lam_id"/>
                             <field name="nghi_giua_ca"/>
-                            <field name="trang_thai"/>
+                            <field name="trang_thai" readonly="1"/>
                         </group>
 
                         <group col="6" string="Đơn từ">

@@ -4,6 +4,7 @@ class TongHopChamCong(models.Model):
     _name = 'tong_hop_cham_cong'
     _description = 'Tổng hợp chấm công theo tháng'
     _rec_name = 'nhan_vien_id'
+    _order = 'nam desc, thang desc, tuan desc, ngay desc'
 
     nhan_vien_id = fields.Many2one('nhan_vien', string="Nhân viên", required=True)
     phong_ban_id = fields.Many2one('phong_ban', string="Phòng ban", related="nhan_vien_id.phong_ban_id", store=True)

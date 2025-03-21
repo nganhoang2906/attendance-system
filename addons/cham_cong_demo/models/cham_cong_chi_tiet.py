@@ -500,6 +500,7 @@ class ChamCongChiTiet(models.Model):
 
             if record.trang_thai_cham_cong not in ["Chưa chấm công đủ", "Nghỉ không phép"]:
                 record.tong_gio_lam = thoi_gian_lam
+                record.so_gio_cong = thoi_gian_lam
             else:
                 record.tong_gio_lam = 0
 
@@ -619,7 +620,5 @@ class ChamCongChiTiet(models.Model):
             if 'nhan_vien_id' in vals:
                 raise ValidationError("Không thể chỉnh sửa nhân viên sau khi chấm công!")
 
-            if 'ngay_cham_cong' in vals:
-                raise ValidationError("Không thể chỉnh sửa ngày chấm công sau khi chấm công!")
-            
         return super(ChamCongChiTiet, self).write(vals)
+    

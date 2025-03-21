@@ -7,7 +7,7 @@ class DotDangKyCaLam(models.Model):
     _name = 'dot_dang_ky_ca_lam'
     _description = "Bảng chứa thông tin đợt đăng ký"
     _rec_name = 'ten_dot'
-    _order = 'ten_dot desc'
+    _order = 'nam_dang_ky desc, thang_dang_ky desc'
     _sql_constraints = [
         ('unique_ma_dot', 'unique(ma_dot)', 'Đã tồn tại mã đợt!'),
         ('unique_nam_thang', 'unique(nam_dang_ky, thang_dang_ky)', 'Đã tồn tại đợt đăng ký của tháng này!')
