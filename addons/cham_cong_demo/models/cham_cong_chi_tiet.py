@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pytz import timezone, UTC
 
 class ChamCongChiTiet(models.Model):
@@ -52,6 +52,7 @@ class ChamCongChiTiet(models.Model):
         ('Đi muộn về sớm', "Đi muộn về sớm"),
         ('Chưa chấm công đủ', "Chưa chấm công đủ"),
         ('Nghỉ', "Nghỉ"),
+        ('Nghỉ không phép', "Nghỉ không phép"),
     ], string="Trạng thái chấm công", compute="_compute_trang_thai_cham_cong", store=True)
 
     so_phut_di_muon = fields.Integer(string="Số phút đi muộn", compute="_compute_ket_qua_cham_cong", store=True)
@@ -233,10 +234,6 @@ class ChamCongChiTiet(models.Model):
                         record.trang_thai_vao_ca = "Nghỉ buổi sáng"
                         record.so_phut_di_muon_dau_ca = 0
                         continue
-                    else:
-                        record.trang_thai_vao_ca = "Nghỉ"
-                        record.so_phut_di_muon_dau_ca = 0
-                        continue
                 else:
                     record.trang_thai_vao_ca = "Nghỉ"
                     record.so_phut_di_muon_dau_ca = 0
@@ -259,7 +256,7 @@ class ChamCongChiTiet(models.Model):
                 
                 if record.don_dang_ky_lam_them_gio_id:
                     don_lam_them = record.don_dang_ky_lam_them_gio_id
-                    if don_lam_them.thoi_diem_lam_them == "Trước ca" and don_lam_them.lam_ngoai_ca_tu:
+                    if don_lam_them.thoi_diem_lam_them != "Sau ca" and don_lam_them.lam_ngoai_ca_tu:
                         lam_ngoai_ca_tu = self._convert_time_to_datetime(ngay, don_lam_them.lam_ngoai_ca_tu)
                         so_phut_di_muon = max(0, int((record.cham_vao_ca - lam_ngoai_ca_tu).total_seconds() // 60))
                         record.trang_thai_vao_ca = "Đi muộn" if so_phut_di_muon > 0 else "Đúng giờ"
@@ -288,10 +285,6 @@ class ChamCongChiTiet(models.Model):
                 if don_xin_nghi.nghi_nua_ngay:
                     if record.ca_lam_id.ten_ca == "Cả ngày" and don_xin_nghi.buoi_nghi == "Sáng":
                         record.trang_thai_ra_giua_ca = "Nghỉ buổi sáng"
-                        record.so_phut_ve_som_giua_ca = 0
-                        continue
-                    else:
-                        record.trang_thai_ra_giua_ca = "Nghỉ"
                         record.so_phut_ve_som_giua_ca = 0
                         continue
                 else:
@@ -327,8 +320,8 @@ class ChamCongChiTiet(models.Model):
                 continue
             
             if record.nghi_giua_ca == False:
-                record.trang_thai_ra_giua_ca = False
-                record.so_phut_ve_som_giua_ca = 0
+                record.trang_thai_vao_giua_ca = False
+                record.so_phut_di_muon_giua_ca = 0
                 continue
             
             ngay = record.ngay_cham_cong
@@ -339,10 +332,6 @@ class ChamCongChiTiet(models.Model):
                 if don_xin_nghi.nghi_nua_ngay:
                     if record.ca_lam_id.ten_ca == "Cả ngày" and don_xin_nghi.buoi_nghi == "Chiều":
                         record.trang_thai_vao_giua_ca = "Nghỉ buổi chiều"
-                        record.so_phut_di_muon_giua_ca = 0
-                        continue
-                    else:
-                        record.trang_thai_vao_giua_ca = "Nghỉ"
                         record.so_phut_di_muon_giua_ca = 0
                         continue
                 else:
@@ -386,10 +375,6 @@ class ChamCongChiTiet(models.Model):
                         record.trang_thai_ra_ca = "Nghỉ buổi chiều"
                         record.so_phut_ve_som_cuoi_ca = 0
                         continue
-                    else:
-                        record.trang_thai_ra_ca = "Nghỉ"
-                        record.so_phut_ve_som_cuoi_ca = 0
-                        continue
                 else:
                     record.trang_thai_ra_ca = "Nghỉ"
                     record.so_phut_ve_som_cuoi_ca = 0
@@ -412,7 +397,7 @@ class ChamCongChiTiet(models.Model):
 
                 if record.don_dang_ky_lam_them_gio_id:
                     don_lam_them = record.don_dang_ky_lam_them_gio_id
-                    if don_lam_them.thoi_diem_lam_them == "Sau ca" and don_lam_them.lam_ngoai_ca_den:
+                    if don_lam_them.thoi_diem_lam_them != "Trước ca" and don_lam_them.lam_ngoai_ca_den:
                         lam_ngoai_ca_den = self._convert_time_to_datetime(ngay, don_lam_them.lam_ngoai_ca_den)
                         so_phut_ve_som = max(0, int((lam_ngoai_ca_den - record.cham_ra_ca).total_seconds() // 60))
                         record.trang_thai_ra_ca = "Về sớm" if so_phut_ve_som > 0 else "Đúng giờ"
@@ -451,6 +436,7 @@ class ChamCongChiTiet(models.Model):
             ngay = record.ngay_cham_cong
             gio_ra_ca = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_ra_ca)
             gio_vao_ca = self._convert_time_to_datetime(ngay, record.ca_lam_id.gio_vao_ca)
+
             record.so_phut_di_muon = record.so_phut_di_muon_dau_ca + record.so_phut_di_muon_giua_ca
             record.so_phut_ve_som = record.so_phut_ve_som_giua_ca + record.so_phut_ve_som_cuoi_ca
 
@@ -459,32 +445,48 @@ class ChamCongChiTiet(models.Model):
 
             if record.don_xin_nghi_id:
                 if record.don_xin_nghi_id.loai_nghi in ["Nghỉ không lương", "Nghỉ hưởng chế độ BHXH"]:
-                    record.so_gio_cong = 0
-                    record.tong_gio_lam = 0
-                    record.so_gio_lam_them = 0
-                    continue
-                else: 
-                    record.so_gio_cong = record.ca_lam_id.tong_thoi_gian
-                    record.so_gio_lam_them = 0
-                    record.tong_gio_lam = 0
-                    continue
+                    if record.don_xin_nghi_id.nghi_nua_ngay == False:
+                        record.so_gio_cong = 0
+                        record.tong_gio_lam = 0
+                        record.so_gio_lam_them = 0
+                        continue
+                    else:
+                        record.so_gio_lam_them = 0
+                        record.tong_gio_lam = record.ca_lam_id.tong_thoi_gian / 2 - (record.so_phut_di_muon + record.so_phut_ve_som) / 60
+                        record.so_gio_cong = record.tong_gio_lam
+                        continue
+                
+                else:
+                    if record.don_xin_nghi_id.nghi_nua_ngay:
+                        record.so_gio_lam_them = 0
+                        record.tong_gio_lam = record.ca_lam_id.tong_thoi_gian / 2 - (record.so_phut_di_muon + record.so_phut_ve_som) / 60
+                        record.so_gio_cong = record.tong_gio_lam + record.ca_lam_id.tong_thoi_gian / 2
+                        continue
+                    else: 
+                        record.so_gio_cong = record.ca_lam_id.tong_thoi_gian
+                        record.so_gio_lam_them = 0
+                        record.tong_gio_lam = 0
+                        continue
             
-            if record.don_dang_ky_lam_them_gio_id and record.trang_thai_cham_cong != "Chưa chấm công đủ":
+            if record.trang_thai_cham_cong not in ["Chưa chấm công đủ", "Nghỉ không phép"]:
                 don_lam_them = record.don_dang_ky_lam_them_gio_id
+                ngay = record.ngay_cham_cong
+                lam_ngoai_ca_tu = self._convert_time_to_datetime(ngay, don_lam_them.lam_ngoai_ca_tu)
+                lam_ngoai_ca_den = self._convert_time_to_datetime(ngay, don_lam_them.lam_ngoai_ca_den)
+                
                 if don_lam_them.thoi_diem_lam_them == "Trước ca":
-                    thoi_gian_lam_them = max(0, (gio_vao_ca - record.cham_vao_ca).total_seconds() / 3600)
+                    thoi_gian_lam_them = max((gio_vao_ca - max(record.cham_vao_ca, lam_ngoai_ca_tu)).total_seconds() / 3600, 0)
                     
                 elif don_lam_them.thoi_diem_lam_them == "Sau ca":
-                    thoi_gian_lam_them = max(0, (record.cham_ra_ca - gio_ra_ca).total_seconds() / 3600)
-
-                elif don_lam_them.thoi_diem_lam_them in ["Ngày nghỉ", "Ngày lễ"]:
-                    thoi_gian_lam_ngoai_ca = 0
-                    if don_lam_them.lam_ngoai_ca_tu == gio_ra_ca:
-                        thoi_gian_lam_them = max(0, (record.cham_ra_ca - gio_ra_ca).total_seconds() / 3600)
-                        
-                    elif don_lam_them.lam_ngoai_ca_den == gio_vao_ca:
-                        thoi_gian_lam_them = max(0, (gio_vao_ca - record.cham_ra_ca).total_seconds() / 3600)
+                    thoi_gian_lam_them = max((min(record.cham_ra_ca, lam_ngoai_ca_den) - gio_ra_ca).total_seconds() / 3600, 0)
                 
+                elif don_lam_them.thoi_diem_lam_them in ["Ngày nghỉ", "Ngày lễ"]:
+                    if don_lam_them.lam_ngoai_ca_tu == record.ca_lam_id.gio_ra_ca:
+                        thoi_gian_lam_them = max((min(record.cham_ra_ca, lam_ngoai_ca_den) - gio_ra_ca).total_seconds() / 3600, 0)
+
+                    elif don_lam_them.lam_ngoai_ca_den == record.ca_lam_id.gio_vao_ca:
+                        thoi_gian_lam_them = max((gio_vao_ca - max(record.cham_vao_ca, lam_ngoai_ca_tu)).total_seconds() / 3600, 0)
+
                 record.so_gio_lam_them = thoi_gian_lam_them    
                 
                 if don_lam_them.loai_ngay == "Ngày làm việc":
@@ -493,10 +495,10 @@ class ChamCongChiTiet(models.Model):
                     record.so_gio_cong = (thoi_gian_lam + thoi_gian_lam_them) * 2
                 elif don_lam_them.loai_ngay == "Ngày lễ":
                     record.so_gio_cong = (thoi_gian_lam + thoi_gian_lam_them) * 3
-                    if record.ngay_cham_cong.weekday() == 6:  # Nếu là Chủ nhật và ngày lễ
+                    if record.ngay_cham_cong.weekday() == 6:  # Nếu ngày lễ trùng với Chủ nhật
                         record.so_gio_cong = (thoi_gian_lam + thoi_gian_lam_them) * 4
 
-            if record.trang_thai_cham_cong != "Chưa chấm công đủ":
+            if record.trang_thai_cham_cong not in ["Chưa chấm công đủ", "Nghỉ không phép"]:
                 record.tong_gio_lam = thoi_gian_lam
             else:
                 record.tong_gio_lam = 0
@@ -504,23 +506,36 @@ class ChamCongChiTiet(models.Model):
     @api.depends('trang_thai_vao_ca', 'trang_thai_ra_ca', 'trang_thai_vao_giua_ca', 'trang_thai_ra_giua_ca', 'nghi_giua_ca')
     def _compute_trang_thai_cham_cong(self):
         for record in self:
+            
             trang_thai = "Đúng giờ"
 
+            if record.ngay_cham_cong and record.ngay_cham_cong < date.today():
+                # Trường hợp không nghỉ giữa ca, nhưng chưa chấm vào/ra => Nghỉ không phép
+                if not record.nghi_giua_ca and record.trang_thai_vao_ca == "Chưa chấm vào" and record.trang_thai_ra_ca == "Chưa chấm ra":
+                    record.trang_thai_cham_cong = "Nghỉ không phép"
+                    continue
+
+                # Trường hợp có nghỉ giữa ca, nhưng tất cả các trạng thái vào/ra đều chưa chấm => Nghỉ không phép
+                if (
+                    record.nghi_giua_ca and
+                    all(trang_thai == "Chưa chấm vào" for trang_thai in [record.trang_thai_vao_ca, record.trang_thai_vao_giua_ca]) and
+                    all(trang_thai == "Chưa chấm ra" for trang_thai in [record.trang_thai_ra_ca, record.trang_thai_ra_giua_ca])
+                ):
+                    record.trang_thai_cham_cong = "Nghỉ không phép"
+                    continue
+                
             if any(trang_thai == "Nghỉ" for trang_thai in [record.trang_thai_vao_ca, record.trang_thai_ra_ca, record.trang_thai_vao_giua_ca, record.trang_thai_ra_giua_ca]):
                 record.trang_thai_cham_cong = "Nghỉ"
                 continue
 
-            if "Chưa chấm vào" in [record.trang_thai_vao_ca] or "Chưa chấm ra" in [record.trang_thai_ra_ca]:
+            if  record.trang_thai_vao_ca == "Chưa chấm vào" or record.trang_thai_ra_ca == "Chưa chấm ra":
                 record.trang_thai_cham_cong = "Chưa chấm công đủ"
                 continue
 
-            if record.nghi_giua_ca and (
-                "Chưa chấm vào" in [record.trang_thai_vao_giua_ca] or 
-                "Chưa chấm ra" in [record.trang_thai_ra_giua_ca]
-            ):
+            if record.nghi_giua_ca and (record.trang_thai_vao_giua_ca == "Chưa chấm vào" or record.trang_thai_ra_giua_ca == "Chưa chấm ra"):
                 record.trang_thai_cham_cong = "Chưa chấm công đủ"
                 continue
-
+            
             so_lan_di_muon = sum(trang_thai == "Đi muộn" for trang_thai in [record.trang_thai_vao_ca, record.trang_thai_vao_giua_ca])
             so_lan_ve_som = sum(trang_thai == "Về sớm" for trang_thai in [record.trang_thai_ra_ca, record.trang_thai_ra_giua_ca])
 
@@ -532,16 +547,30 @@ class ChamCongChiTiet(models.Model):
                 trang_thai = "Về sớm"
 
             record.trang_thai_cham_cong = trang_thai
-
                 
     def action_chot_cong(self):
         for record in self:
-            if record.trang_thai_cham_cong == "Chưa chấm công đủ":
+            if record.trang_thai_cham_cong == "Chưa chấm công đủ" and record.trang_thai == 'Chưa chốt công':
                 raise ValidationError("Chưa chấm công đủ!")
-            if record.trang_thai == 'Chưa chốt công':
+            else:
                 record.write({'trang_thai': 'Đã chốt công'})
 
     def action_huy(self):
         for record in self:
             if record.trang_thai == 'Đã chốt công':
                 record.write({'trang_thai': 'Chưa chốt công'})
+
+    def write(self, vals):
+        for record in self:
+            if record.trang_thai != 'Chưa chốt công':
+                allowed_fields = {'trang_thai'}
+                if any(field not in allowed_fields for field in vals.keys()):
+                    raise ValidationError("Chỉ có thể cập nhật khi chưa chốt công!")
+
+            if 'nhan_vien_id' in vals:
+                raise ValidationError("Không thể chỉnh sửa nhân viên sau khi chấm công!")
+
+            if 'ngay_cham_cong' in vals:
+                raise ValidationError("Không thể chỉnh sửa ngày chấm công sau khi chấm công!")
+            
+        return super(ChamCongChiTiet, self).write(vals)

@@ -124,7 +124,7 @@
                         decoration-success="trang_thai_cham_cong == 'Đúng giờ'"
                         decoration-warning="trang_thai_cham_cong in ['Đi muộn', 'Về sớm', 'Đi muộn về sớm']"
                         decoration-muted="trang_thai_cham_cong == 'Chưa chấm công đủ'"
-                        decoration-danger="trang_thai_cham_cong == 'Nghỉ'"
+                        decoration-danger="trang_thai_cham_cong in ['Nghỉ', 'Nghỉ không phép']"
                     />
                     <field name="trang_thai"/>
                     

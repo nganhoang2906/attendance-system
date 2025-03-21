@@ -89,18 +89,6 @@ class DonDangKyLamThemGio(models.Model):
                 if record.ngay_lam_don > record.ngay_ap_dung + timedelta(days=3):
                     raise ValidationError("Ngày làm đơn không được sau quá 3 ngày từ ngày áp dụng!")
     
-    @api.constrains('ngay_ap_dung', 'nhan_vien_id')
-    def _check_don_xin_nghi(self):
-        for record in self:
-            don_xin_nghi = self.env['don_xin_nghi'].search([
-                ('nhan_vien_id', '=', record.nhan_vien_id.id),
-                ('trang_thai', '=', 'Đã duyệt'),
-                ('ngay_bat_dau_nghi', '<=', record.ngay_ap_dung),
-                ('ngay_ket_thuc_nghi', '>=', record.ngay_ap_dung),
-            ])
-            if don_xin_nghi:
-                raise ValidationError("Nhân viên đã có đơn xin nghỉ vào ngày này!")
-    
     @api.constrains('ngay_ap_dung', 'nhan_vien_id', 'trang_thai')
     def _check_don_da_duyet(self):
         for record in self:
