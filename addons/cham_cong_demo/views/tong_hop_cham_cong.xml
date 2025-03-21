@@ -54,10 +54,19 @@
                     <field name="so_lan_nghi"/>
 
                     <group expand="0" string="Lọc theo thời gian">
-                        <filter name="filter_5_nam" string="5 năm gần đây" domain="[('nam', '>=', (context_today().year - 4))]"/>
-                        <filter name="filter_12_thang" string="12 tháng gần đây" domain="[('nam', '=', context_today().year), ('thang', '>=', (context_today().month - 11))]"/>
-                        <filter name="filter_1_thang" string="1 tháng gần đây" domain="[('nam', '=', context_today().year), ('thang', '=', context_today().month)]"/>
+                        <filter name="filter_3_nam" string="3 năm gần đây"
+                            domain="[('nam', '>=', (datetime.today().year - 2))]"/>
+                        
+                        <filter name="filter_1_nam" string="1 năm gần đây"
+                            domain="[('nam', '=', datetime.today().year)]"/>
+                        
+                        <filter name="filter_1_thang" string="1 tháng gần đây"
+                            domain="[('nam', '=', datetime.today().year), ('thang', '=', datetime.today().month)]"/>
+                        
+                        <filter name="filter_1_tuan" string="1 tuần gần đây"
+                            domain="[('nam', '=', datetime.today().year), ('thang', '=', datetime.today().month), ('tuan', '=', datetime.today().isocalendar()[1])]"/>
                     </group>
+
                 </search>
             </field>
         </record>
@@ -67,11 +76,12 @@
             <field name="model">tong_hop_cham_cong</field>
             <field name="arch" type="xml">
                 <pivot string="Tổng hợp chấm công">
+                    <field name="phong_ban_id" type="row"/>
+                    <field name="nhan_vien_id" type="row"/>
                     <field name="nam" type="col"/>
                     <field name="thang" type="col"/>
                     <field name="ngay" type="col"/>
-                    <field name="phong_ban_id" type="row"/>
-                    <field name="nhan_vien_id" type="row"/>
+                    <field name="tuan" type="col"/>
                     <field name="so_lan_di_muon" type="measure"/>
                     <field name="so_lan_ve_som" type="measure"/>
                     <field name="so_lan_nghi" type="measure"/>
@@ -79,11 +89,27 @@
             </field>
         </record>
 
-        <record id="view_tong_hop_cham_cong_graph" model="ir.ui.view">
-            <field name="name">tong_hop_cham_cong_graph</field>
+        <!-- Biểu đồ theo năm (3 năm gần đây) -->
+        <record id="view_tong_hop_cham_cong_graph_nam" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong_graph_nam</field>
             <field name="model">tong_hop_cham_cong</field>
             <field name="arch" type="xml">
-                <graph string="Biểu đồ tổng hợp chấm công" type="bar" stacked="False">
+                <graph string="Tổng hợp chấm công - 3 năm gần đây" type="bar" stacked="False">
+                    <field name="nam" type="row"/>
+                    <field name="phong_ban_id" type="col"/>
+                    <field name="so_lan_di_muon" type="measure"/>
+                    <field name="so_lan_ve_som" type="measure"/>
+                    <field name="so_lan_nghi" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Biểu đồ theo tháng (1 năm gần đây) -->
+        <record id="view_tong_hop_cham_cong_graph_thang" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong_graph_thang</field>
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <graph string="Tổng hợp chấm công - 1 năm gần đây" type="bar" stacked="False">
                     <field name="thang" type="row"/>
                     <field name="phong_ban_id" type="col"/>
                     <field name="so_lan_di_muon" type="measure"/>
@@ -93,6 +119,71 @@
             </field>
         </record>
 
+        <!-- Biểu đồ theo tuần (1 tháng gần đây) -->
+        <record id="view_tong_hop_cham_cong_graph_tuan" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong_graph_tuan</field>
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <graph string="Tổng hợp chấm công - 1 tháng gần đây" type="bar" stacked="False">
+                    <field name="tuan" type="row"/>
+                    <field name="phong_ban_id" type="col"/>
+                    <field name="so_lan_di_muon" type="measure"/>
+                    <field name="so_lan_ve_som" type="measure"/>
+                    <field name="so_lan_nghi" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Biểu đồ theo ngày (1 tuần gần đây) -->
+        <record id="view_tong_hop_cham_cong_graph_ngay" model="ir.ui.view">
+            <field name="name">tong_hop_cham_cong_graph_ngay</field>
+            <field name="model">tong_hop_cham_cong</field>
+            <field name="arch" type="xml">
+                <graph string="Tổng hợp chấm công - 1 tuần gần đây" type="bar" stacked="False">
+                    <field name="ngay" type="row"/>
+                    <field name="phong_ban_id" type="col"/>
+                    <field name="so_lan_di_muon" type="measure"/>
+                    <field name="so_lan_ve_som" type="measure"/>
+                    <field name="so_lan_nghi" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Action cho 3 năm gần đây -->
+        <record id="action_tong_hop_cham_cong_nam" model="ir.actions.act_window">
+            <field name="name">Tổng hợp chấm công - 3 năm gần đây</field>
+            <field name="res_model">tong_hop_cham_cong</field>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_tong_hop_cham_cong_graph_nam"/>
+            <field name="domain">[('nam', '>=', (context_today().year - 2))]</field>
+        </record>
+
+        <!-- Action cho 1 năm gần đây -->
+        <record id="action_tong_hop_cham_cong_thang" model="ir.actions.act_window">
+            <field name="name">Tổng hợp chấm công - 1 năm gần đây</field>
+            <field name="res_model">tong_hop_cham_cong</field>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_tong_hop_cham_cong_graph_thang"/>
+            <field name="domain">[('nam', '=', context_today().year)]</field>
+        </record>
+
+        <!-- Action cho 1 tháng gần đây -->
+        <record id="action_tong_hop_cham_cong_tuan" model="ir.actions.act_window">
+            <field name="name">Tổng hợp chấm công - 1 tháng gần đây</field>
+            <field name="res_model">tong_hop_cham_cong</field>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_tong_hop_cham_cong_graph_tuan"/>
+            <field name="domain">[('nam', '=', context_today().year), ('thang', '=', context_today().month)]</field>
+        </record>
+
+        <!-- Action cho 1 tuần gần đây -->
+        <record id="action_tong_hop_cham_cong_ngay" model="ir.actions.act_window">
+            <field name="name">Tổng hợp chấm công - 1 tuần gần đây</field>
+            <field name="res_model">tong_hop_cham_cong</field>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_tong_hop_cham_cong_graph_ngay"/>
+            <field name="domain">[('nam', '=', context_today().year), ('thang', '=', context_today().month), ('tuan', '=', context_today().isocalendar()[1])]</field>
+        </record>
 
         <record id="action_tong_hop_cham_cong" model="ir.actions.act_window">
             <field name="name">Tổng hợp chấm công</field>

@@ -552,12 +552,61 @@ class ChamCongChiTiet(models.Model):
         for record in self:
             if record.trang_thai_cham_cong == "Chưa chấm công đủ" and record.trang_thai == 'Chưa chốt công':
                 raise ValidationError("Chưa chấm công đủ!")
+
+            ngay = record.ngay_cham_cong
+            nam = str(ngay.year)
+            thang = str(ngay.month)
+            ngay_str = str(ngay.day)
+            tuan = ngay.isocalendar()[1]
+
+            tong_hop = self.env['tong_hop_cham_cong'].search([
+                ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                ('nam', '=', nam),
+                ('thang', '=', thang),
+                ('ngay', '=', ngay_str)
+            ], limit=1)
+
+            if tong_hop:
+                tong_hop.write({
+                    'so_lan_di_muon': tong_hop.so_lan_di_muon + (1 if record.trang_thai_cham_cong == "Đi muộn" else 0),
+                    'so_lan_ve_som': tong_hop.so_lan_ve_som + (1 if record.trang_thai_cham_cong == "Về sớm" else 0),
+                    'so_lan_nghi': tong_hop.so_lan_nghi + (1 if record.trang_thai_cham_cong == "Nghỉ không phép" else 0),
+                    'trang_thai_cham_cong': record.trang_thai_cham_cong,
+                })
             else:
-                record.write({'trang_thai': 'Đã chốt công'})
+                self.env['tong_hop_cham_cong'].create({
+                    'nhan_vien_id': record.nhan_vien_id.id,
+                    'nam': nam,
+                    'thang': thang,
+                    'ngay': ngay_str,
+                    'tuan': tuan,
+                    'so_lan_di_muon': 1 if record.trang_thai_cham_cong == "Đi muộn" else 0,
+                    'so_lan_ve_som': 1 if record.trang_thai_cham_cong == "Về sớm" else 0,
+                    'so_lan_nghi': 1 if record.trang_thai_cham_cong == "Nghỉ không phép" else 0,
+                    'trang_thai_cham_cong': record.trang_thai_cham_cong,
+                })
+
+            record.write({'trang_thai': 'Đã chốt công'})
 
     def action_huy(self):
+        """ Hủy chốt công: Xóa dữ liệu trong `tong_hop_cham_cong` """
         for record in self:
             if record.trang_thai == 'Đã chốt công':
+                ngay = record.ngay_cham_cong
+                nam = str(ngay.year)
+                thang = str(ngay.month)
+                ngay_str = str(ngay.day)
+
+                tong_hop = self.env['tong_hop_cham_cong'].search([
+                    ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                    ('nam', '=', nam),
+                    ('thang', '=', thang),
+                    ('ngay', '=', ngay_str)
+                ], limit=1)
+
+                if tong_hop:
+                    tong_hop.unlink()
+
                 record.write({'trang_thai': 'Chưa chốt công'})
 
     def write(self, vals):
