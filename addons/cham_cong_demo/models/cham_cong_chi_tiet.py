@@ -569,9 +569,9 @@ class ChamCongChiTiet(models.Model):
 
             if tong_hop:
                 tong_hop.write({
-                    'so_lan_di_muon': tong_hop.so_lan_di_muon + (1 if record.trang_thai_cham_cong == "Đi muộn" else 0),
-                    'so_lan_ve_som': tong_hop.so_lan_ve_som + (1 if record.trang_thai_cham_cong == "Về sớm" else 0),
-                    'so_lan_nghi': tong_hop.so_lan_nghi + (1 if record.trang_thai_cham_cong == "Nghỉ không phép" else 0),
+                    'so_lan_di_muon': tong_hop.so_lan_di_muon + (1 if record.trang_thai_vao_ca == "Đi muộn" else 0) + (1 if record.trang_thai_vao_giua_ca == "Đi muộn" else 0),
+                    'so_lan_ve_som': tong_hop.so_lan_ve_som + (1 if record.trang_thai_ra_ca == "Về sớm" else 0) + (1 if record.trang_thai_ra_giua_ca == "Về sớm" else 0),
+                    'so_lan_nghi': tong_hop.so_lan_nghi + (1 if record.trang_thai_cham_cong in ["Nghỉ không phép", "Nghỉ"] else 0) + (1 if record.trang_thai_vao_ca in ["Nghỉ buổi sáng"] else 0) + (1 if record.trang_thai_ra_ca == "Nghỉ buổi chiều" else 0),
                     'trang_thai_cham_cong': record.trang_thai_cham_cong,
                 })
             else:
@@ -581,16 +581,15 @@ class ChamCongChiTiet(models.Model):
                     'thang': thang,
                     'ngay': ngay_str,
                     'tuan': tuan,
-                    'so_lan_di_muon': 1 if record.trang_thai_cham_cong == "Đi muộn" else 0,
-                    'so_lan_ve_som': 1 if record.trang_thai_cham_cong == "Về sớm" else 0,
-                    'so_lan_nghi': 1 if record.trang_thai_cham_cong == "Nghỉ không phép" else 0,
+                    'so_lan_di_muon': tong_hop.so_lan_di_muon + (1 if record.trang_thai_vao_ca == "Đi muộn" else 0) + (1 if record.trang_thai_vao_giua_ca == "Đi muộn" else 0),
+                    'so_lan_ve_som': tong_hop.so_lan_ve_som + (1 if record.trang_thai_ra_ca == "Về sớm" else 0) + (1 if record.trang_thai_ra_giua_ca == "Về sớm" else 0),
+                    'so_lan_nghi': tong_hop.so_lan_nghi + (1 if record.trang_thai_cham_cong in ["Nghỉ không phép", "Nghỉ"] else 0) + (1 if record.trang_thai_vao_ca in ["Nghỉ buổi sáng"] else 0) + (1 if record.trang_thai_ra_ca == "Nghỉ buổi chiều" else 0),
                     'trang_thai_cham_cong': record.trang_thai_cham_cong,
                 })
 
             record.write({'trang_thai': 'Đã chốt công'})
 
     def action_huy(self):
-        """ Hủy chốt công: Xóa dữ liệu trong `tong_hop_cham_cong` """
         for record in self:
             if record.trang_thai == 'Đã chốt công':
                 ngay = record.ngay_cham_cong
@@ -622,3 +621,42 @@ class ChamCongChiTiet(models.Model):
 
         return super(ChamCongChiTiet, self).write(vals)
     
+    @api.model
+    def create(self, vals):
+        record = super(ChamCongChiTiet, self).create(vals)
+
+        if vals.get('trang_thai') == 'Đã chốt công':
+            ngay = record.ngay_cham_cong
+            nam = str(ngay.year)
+            thang = str(ngay.month)
+            ngay_str = str(ngay.day)
+            tuan = ngay.isocalendar()[1]
+
+            tong_hop = self.env['tong_hop_cham_cong'].search([
+                ('nhan_vien_id', '=', record.nhan_vien_id.id),
+                ('nam', '=', nam),
+                ('thang', '=', thang),
+                ('ngay', '=', ngay_str)
+            ], limit=1)
+
+            if tong_hop:
+                tong_hop.write({
+                    'so_lan_di_muon': tong_hop.so_lan_di_muon + (1 if record.trang_thai_vao_ca == "Đi muộn" else 0) + (1 if record.trang_thai_vao_giua_ca == "Đi muộn" else 0),
+                    'so_lan_ve_som': tong_hop.so_lan_ve_som + (1 if record.trang_thai_ra_ca == "Về sớm" else 0) + (1 if record.trang_thai_ra_giua_ca == "Về sớm" else 0),
+                    'so_lan_nghi': tong_hop.so_lan_nghi + (1 if record.trang_thai_cham_cong in ["Nghỉ không phép", "Nghỉ"] else 0) + (1 if record.trang_thai_vao_ca in ["Nghỉ buổi sáng"] else 0) + (1 if record.trang_thai_ra_ca == "Nghỉ buổi chiều" else 0),
+                    'trang_thai_cham_cong': record.trang_thai_cham_cong,
+                })
+            else:
+                self.env['tong_hop_cham_cong'].create({
+                    'nhan_vien_id': record.nhan_vien_id.id,
+                    'nam': nam,
+                    'thang': thang,
+                    'ngay': ngay_str,
+                    'tuan': tuan,
+                    'so_lan_di_muon': tong_hop.so_lan_di_muon + (1 if record.trang_thai_vao_ca == "Đi muộn" else 0) + (1 if record.trang_thai_vao_giua_ca == "Đi muộn" else 0),
+                    'so_lan_ve_som': tong_hop.so_lan_ve_som + (1 if record.trang_thai_ra_ca == "Về sớm" else 0) + (1 if record.trang_thai_ra_giua_ca == "Về sớm" else 0),
+                    'so_lan_nghi': tong_hop.so_lan_nghi + (1 if record.trang_thai_cham_cong in ["Nghỉ không phép", "Nghỉ"] else 0) + (1 if record.trang_thai_vao_ca in ["Nghỉ buổi sáng"] else 0) + (1 if record.trang_thai_ra_ca == "Nghỉ buổi chiều" else 0),
+                    'trang_thai_cham_cong': record.trang_thai_cham_cong,
+                })
+
+        return record

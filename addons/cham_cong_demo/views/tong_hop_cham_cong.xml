@@ -18,6 +18,7 @@
                             <field name="so_lan_di_muon"/>
                             <field name="so_lan_ve_som"/>
                             <field name="so_lan_nghi"/>
+                            <field name="trang_thai_cham_cong"/>
                         </group>
                     </sheet>
                 </form>
@@ -38,6 +39,7 @@
                     <field name="so_lan_di_muon"/>
                     <field name="so_lan_ve_som"/>
                     <field name="so_lan_nghi"/>
+                    <field name="trang_thai_cham_cong"/>
                 </tree>
             </field>
         </record>
@@ -55,6 +57,12 @@
                     <field name="so_lan_di_muon"/>
                     <field name="so_lan_ve_som"/>
                     <field name="so_lan_nghi"/>
+                    <field name="trang_thai_cham_cong"/>
+                    <searchpanel>
+                        <field name="nhan_vien_id" select="multi"/>
+                        <field name="phong_ban_id" select="multi"/>
+                        <field name="trang_thai_cham_cong" select="multi"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>
